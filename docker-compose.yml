@@ -1,0 +1,39 @@
+
+version: "3.0"
+services:
+  web:
+    container_name: heritage-app
+    env_file:
+      - .env
+    build: .
+    ports:
+      - 5050:${SERVER_PORT}/tcp
+    links:
+      - mysql
+  mysql:
+    container_name: heritage-db
+    environment:
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DB}
+    image: library/mysql:8.0.21
+    ports:
+      - ${MYSQL_PORT}:${MYSQL_PORT}/tcp
+  flyway:
+    container_name: my-flyway
+    environment:
+      - FLYWAY_USER=${MYSQL_USER}
+      - FLYWAY_PASSWORD=${MYSQL_PASSWORD}
+      - FLYWAY_URL=jdbc:mysql://heritage-db:${MYSQL_PORT}/${MYSQL_DB}?useSSL=true
+      - FLYWAY_SCHEMAS=${MYSQL_SCHEMA}
+      - FLYWAY_GROUP=true
+      - FLYWAY_EDITION=${FLYWAY_EDITION}
+    image: flyway/flyway:latest
+    command: -locations=filesystem:/flyway/sql -connectRetries=60 migrate -user=root -password=$MYSQL_ROOT_PASSWORD
+    volumes:
+      - $PWD/res/db-migrations:/flyway/sql
+    links:
+      - mysql
+    depends_on:
+      - mysql
