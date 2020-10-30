@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "start": "node src/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -28,6 +28,6 @@
     "core-js": "^3.6.5",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "node-flywaydb": "^3.0.3",
-  },
+    "node-flywaydb": "^3.0.3"
+  }
 }
