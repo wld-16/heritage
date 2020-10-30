@@ -2,8 +2,9 @@
   "name": "heritage",
   "version": "1.0.0",
   "description": "",
-  "main": "src/server/index.js",
+  "main": "src/server.js",
   "scripts": {
+    "start": "node src/server.js",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
