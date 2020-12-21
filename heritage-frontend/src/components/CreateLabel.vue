@@ -11,6 +11,10 @@
         <input v-model="type" type="radio" value="relationship" id="type-relationship">
           <label for="type-relationship">Relationship</label>
           <input v-model="type" type="radio" value="species" id="type-species">
+          <div v-if="isRelationshipType">
+            <label for="oppositeLabel">Opposite Label:</label>
+            <input v-model="opposite_label" type="text" placeholder="" id="oppositeLabel">
+          </div>
           <label for="type-species">Species</label>
           <input v-model="type" type="radio" value="race" id="type-race">
           <label for="type-race">Race</label>
@@ -22,7 +26,7 @@
 
 <script>
 
-import { createRelationship } from '../repository'
+import { createRelationshipType } from '../repository'
 import { createRace } from '../repository'
 import { createSpecies } from '../repository'
 
@@ -31,16 +35,22 @@ export default {
   data(){
     return {
       type: 'relationship',
-      label: ''
+      label: '',
+      opposite_label: ''
+    }
+  },
+  computed: {
+    isRelationshipType(){
+      return this.type === "relationship"
     }
   },
   methods: {
     create(){
-      let data = { label: this.label}
+      let data = { label: this.label, opposite_label: this.opposite_label }
       switch (this.type){
         case 'relationship': 
           console.log("create relationship")
-          createRelationship(data).then(data => { this.$emit('createRelationship', data.label); }).catch(err => console(err.message));
+          createRelationshipType(data).then(data => { this.$emit('createRelationshipType', data); }).catch(err => console(err.message));
           break;
         case 'race': 
           console.log("create race")

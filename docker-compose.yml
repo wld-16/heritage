@@ -1,22 +1,30 @@
-
-version: "3.0"
+version: "3"
 services:
-  web:
+  app:
     container_name: heritage-app
-    env_file:
-      - .env
+    env_file: .env
     build: .
+    environment: 
+       DATABASE_URL: postgres://${PG_USER}:${PG_PASSWORD}@db:${PG_PORT}/${PG_DB}
+       NODE_ENV: development  
+       PORT: 3000
     ports:
-      - 5050:${SERVER_PORT}/tcp
-    links:
-      - mysql
-  mysql:
+    - 3000:3000
+    depends_on:
+      - db
+    volumes:
+      - .:/app/
+      - /app/node_modules
+  db:
     container_name: heritage-db
+    env_file: .env
     environment:
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DB}
-    image: library/mysql:8.0.21
-    ports:
-      - ${MYSQL_PORT}:${MYSQL_PORT}/tcp
+      - POSTGRES_USER=${PG_USER}
+      - POSTGRES_PASSWORD=${PG_PASSWORD}
+      - POSTGRES_ROOT_PASSWORD=${PG_ROOT_PASSWORD}
+      - POSTGRES_DB=${PG_DB}
+    image: postgres
+    ports: 
+      - "35432:${PG_PORT}"
+    volumes:
+      - ./src/res/db/postgres/V1__Baseline.sql:/docker-entrypoint-initdb.d/V1__Baseline.sql

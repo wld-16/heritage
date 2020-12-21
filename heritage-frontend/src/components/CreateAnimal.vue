@@ -19,10 +19,14 @@
         </span>
       </div>
       <div>
-        <input v-model="race" id="race" type="number" value="1">
-        <label for="race">Race</label>
-        <input v-model="species" id="species" type="number" value="1">
+        <label for="race">Race:</label>
+        <select v-model="race">
+          <option :key="raceObject.id" :value="raceObject.id" v-for="raceObject in allRaces">{{ raceObject.label }}</option>
+        </select>
         <label for="species">Species</label>
+        <select v-model="species">
+          <option :key="speciesObject.id" :value="speciesObject.id" v-for="speciesObject in allSpecies">{{ speciesObject.label }}</option>
+        </select>
       </div>
       <button @click="create" class="button" type="submit">Post</button>
     </section>
@@ -32,6 +36,8 @@
 <script>
 
 import { createAnimal } from '../repository'
+import { getRaces } from '../repository'
+import { getSpecies } from '../repository'
 
 export default {
   name: 'create-animal',
@@ -42,6 +48,8 @@ export default {
       species: 0,
       sex: 'female',
       race: 0,
+      allRaces : [],
+      allSpecies: []
     }
   },
   methods: {
@@ -51,6 +59,10 @@ export default {
         this.$emit('createAnimal', data.person);
       }). catch(err => console(err.message));
     }
+  },
+  mounted(){
+    getRaces().then(data => this.allRaces = data)
+    getSpecies().then(data => this.allSpecies = data)
   }
 }
 </script>

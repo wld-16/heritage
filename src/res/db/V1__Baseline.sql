@@ -1,5 +1,5 @@
 CREATE TABLE Person (
-	id INT NOT NULL AUTO_INCREMENT,
+	id SERIAL NOT NULL AUTO_INCREMENT,
 	forname VARCHAR(60),
 	surname VARCHAR(60),
 	birthdate DATE,
@@ -23,6 +23,7 @@ CREATE TABLE Race (
 CREATE TABLE Relationship (
 	id INT NOT NULL AUTO_INCREMENT,
 	label VARCHAR(60),
+	oppposite INT NOT NULL
 	PRIMARY KEY(id)
 );
 
@@ -30,7 +31,7 @@ CREATE TABLE Animal (
 	id INT NOT NULL AUTO_INCREMENT,
 	name VARCHAR(60),
 	isAlive BOOL,
-	sex ENUM('male', 'female', 'divergent'),
+	sex ENUM('male', 'female'),
 	species_id INT NOT NULL REFERENCES Species,
 	race_id INT NOT NULL REFERENCES Race,
 	PRIMARY KEY(id),
