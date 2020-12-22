@@ -32,9 +32,10 @@ export function createSpecies(data) {
 }
 
 export function createRelationshipType(data) {
+	console.log(data)
 	return axios.post(`${BASE_URL}/api/relationship-label/create`, { 
 		label: data.label,
-		oppositeLabel: data.opposite_label
+		opposite_label: data.opposite_label
 	}).then(response => response.data).catch(err => Promise.reject(err.message));
 }
 
@@ -65,6 +66,7 @@ export function createAnimal(data) {
 }
 
 export function createRelationship(data) {
+	console.log(data)
 	return axios.post(`${BASE_URL}/api/relationship/create`, { 
 		person_1_id: data.person_1_id,
 		person_2_id: data.person_2_id,

@@ -48,7 +48,7 @@ export default {
       createRelationship(data).then(data => {
         this.$emit('createRelationship', data.person);
         this.forname = this.surname = this.gender = '';
-      }). catch(err => console.log(err.message));
+      }).catch(err => console.log(err.message));
     }
   },
   mounted() {

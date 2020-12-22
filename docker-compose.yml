@@ -6,12 +6,11 @@ services:
     build: .
     environment: 
        DATABASE_URL: postgres://${PG_USER}:${PG_PASSWORD}@db:${PG_PORT}/${PG_DB}
-       NODE_ENV: development  
+       NODE_ENV: development
+       DELAYED_INIT: "TRUE"
        PORT: 3000
     ports:
     - 3000:3000
-    depends_on:
-      - db
     volumes:
       - .:/app/
       - /app/node_modules
