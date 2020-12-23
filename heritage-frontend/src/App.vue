@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png">
+    <graph-visualization></graph-visualization>
     <div class="container">
         <div v-if="people">
           <h2>People</h2>
@@ -58,6 +59,8 @@ import CreatePerson from './components/CreatePerson'
 import CreateAnimal from './components/CreateAnimal'
 import CreateLabel from './components/CreateLabel'
 import CreateRelationship from './components/CreateRelationship'
+import GraphVisualization from './components/GraphVisualization'
+
 export default {
 
   name: 'App',
@@ -65,7 +68,8 @@ export default {
     CreatePerson,
     CreateAnimal,
     CreateLabel,
-    CreateRelationship
+    CreateRelationship,
+    GraphVisualization
   },
   data(){
     return {

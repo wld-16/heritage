@@ -1,5 +1,5 @@
 import axios from 'axios';
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = process.env.VUE_APP_API_URL;
 
 export function getPeople() {
 	return axios.get(`${BASE_URL}/api/person/list`).then(response => response.data );
