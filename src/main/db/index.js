@@ -1,7 +1,6 @@
 const { Pool, Client } = require('pg')
 const url = require('url')
 const dbConnectionString = process.env.DATABASE_URL || "postgres://sensei:herit12S@localhost:35432/heritage"
-//const dbConnectionString = process.env.DATABASE_URL || 'postgres://uxkpngnshskoxx:3f9554935857b6cae7dbd5aee82f03ffefb10b60a7c9bbfc59e0e73251ca66a7@ec2-54-217-213-79.eu-west-1.compute.amazonaws.com:5432/ddl6msh9sbn4lo'
 
 const params = url.parse(dbConnectionString)
 const auth = params.auth.split(':')
