@@ -15,6 +15,8 @@
 		components: {
 			GraphNode,
 			GraphLink
+		},
+		created() {
 		}
 	}
 </script>

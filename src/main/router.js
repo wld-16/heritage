@@ -59,7 +59,7 @@ router.get('/api/relationship/list', (req, res) => {
 })
 
 router.get('/api/family-tree/maxHeight', (req, res) => {
-	familyTreeService.getMaxHeight();
+	familyTreeService.countMaxDepth();
 })
 
 router.post('/api/relationship/create', (req, res) => {

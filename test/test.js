@@ -9,11 +9,53 @@ describe('Array', function() {
 	})
 })
 
-describe('TreeStructure', function() {
+describe('Array', function() {
 	describe('#hello()', function() {
-		it('should return hello', function() {
+		it('test array', function() {
+			let ts = new TreeStructure()
+			assert.equal(ts.hello(), "hello");
+		})
+	})
+})
+
+describe('TreeStructure', function() {
+	describe('#countJsonMaxDepth()', function() {
+		it('should count depth of tree', function() {
 			let treeStructure = new TreeStructure();
-			assert.equal(treeStructure.hello(), 'hello')
+			assert.equal(treeStructure.countJsonMaxDepth(
+				{
+					"childlessPeople": [
+						{
+							"person":"Heather Berg",
+							"parents": [{
+								"person":"Mark Berg",
+								"parents": []
+							},{
+								"person":"Narlene Berg",
+								"parents": [
+								{
+									"person":"Janette Morning",
+									"parents":[{
+										"person":"Narlene Berg",
+										"parents": []
+									}]
+								}]
+							}]
+						},
+						{
+							"person":"Carl Daga",
+							"parents": [
+							{
+								"person":"Narlene Berg",
+								"parents": []
+							}]
+						},
+						{
+							"person":"Kandi Kar",
+							"parents": []
+						}
+					]
+				}), 4)
 		})
 	})
 })
