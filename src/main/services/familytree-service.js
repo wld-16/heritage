@@ -80,8 +80,8 @@ class TreeStructure {
 
 	async countMaxDepth() {
 		let childlessPeopleData = await this.getChildlessPeople()
-	
 		console.log(childlessPeopleData.rows)
+
 		let depths = []
 		const start = async () => {
 			await this.asyncForEach(childlessPeopleData.rows, async (person) => {
