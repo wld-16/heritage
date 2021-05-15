@@ -26,12 +26,11 @@
 
 <script>
 
-import { createRelationshipType } from '../repository'
-import { createRace } from '../repository'
-import { createSpecies } from '../repository'
+import repository from '../repository'
 
 export default {
   name: 'create-label',
+  mixins: [ repository ],
   data(){
     return {
       type: 'relationship',
@@ -49,16 +48,13 @@ export default {
       let data = { label: this.label, opposite_label: this.opposite_label }
       switch (this.type){
         case 'relationship': 
-          console.log("create relationship")
-          createRelationshipType(data).then(data => { this.$emit('createRelationshipType', data); }).catch(err => console(err.message));
+          this.createRelationshipType(data).then(() => { this.$emit('created'); }).catch(err => console(err.message));
           break;
         case 'race': 
-          console.log("create race")
-          createRace(data).then(data => { this.$emit('createRace', data.label); }).catch(err => console(err.message));
+          this.createRace(data).then(() => { this.$emit('created'); }).catch(err => console(err.message));
           break;
         case 'species': 
-          console.log("create species")
-          createSpecies(data).then(data => { this.$emit('createSpecies', data.label); }).catch(err => console(err.message));
+          this.createSpecies(data).then(() => { this.$emit('created'); }).catch(err => console(err.message));
           break;
       }
     }

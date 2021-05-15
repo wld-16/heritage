@@ -27,12 +27,11 @@
 
 <script>
 
-import { createRelationship } from '../repository'
-import { getRelationshipTypes } from '../repository'
-import { getPeople } from '../repository'
+import repository from '../repository'
 
 export default {
   name: 'create-person',
+  mixins: [ repository ],
   data(){
     return {
       person_1: 0,
@@ -45,15 +44,15 @@ export default {
   methods: {
     create(){
       let data = { person_1_id: this.person_1, person_2_id: this.person_2, relationship_id: this.relationship }
-      createRelationship(data).then(data => {
-        this.$emit('createRelationship', data.person);
+      this.createRelationship(data).then(() => {
+        this.$emit('created');
         this.forname = this.surname = this.gender = '';
       }).catch(err => console.log(err.message));
     }
   },
   mounted() {
-    getPeople().then(data => this.allPeople = data)
-    getRelationshipTypes().then(data => this.allRelationships = data)
+    this.getPeople().then(data => this.allPeople = data)
+    this.getRelationshipTypes().then(data => this.allRelationships = data)
   }
 }
 </script>

@@ -7,54 +7,55 @@
           <h2>People</h2>
           <li v-for="person in people" :key="person.id">
             {{ person }}
+            <button @click="deletePerson(person.id).then(() => updateView())">delete</button>
           </li>
         </div>
         <div v-if="relationships">
           <h2>Relationship</h2>
           <li v-for="relationship in relationships" :key="relationship.id">
             {{ relationship }}
+            <button @click="deleteRelationship(relationship.id).then(() => updateView())">delete</button>
           </li>
         </div>
         <div v-if="animals">
           <h2>Animals</h2>
           <li v-for="animal in animals" :key="animal.id">
             {{ animal }}
+            <button @click="deleteAnimal(animal.id).then(() => updateView())">delete</button>
           </li>
         </div>
         <div v-if="species">
           <h2>Species</h2>
           <li v-for="speciesSingular in species" :key="speciesSingular.id">
             {{ speciesSingular }}
+            <button @click="deleteSpecies(speciesSingular.id).then(() => updateView())">delete</button>
           </li>
         </div>
         <div v-if="races">
           <h2>Races</h2>
           <li v-for="race in races" :key="race">
             {{ race }}
+            <button @click="deleteRace(race.id).then(() => updateView())">delete</button>
           </li>
         </div>
         <div v-if="relationshipTypes">
           <h2>Relationship Types</h2>
           <li v-for="relationshipType in relationshipTypes" :key="relationshipType.id">
             {{ relationshipType }}
+            <button @click="deleteRelationshipType(relationshipType.id).then(() => updateView())">delete</button>
           </li>
         </div>
-        <create-person></create-person>
-        <create-relationship></create-relationship>
-        <create-animal></create-animal>
-        <create-label></create-label>
+        <create-person @created="updateView"></create-person>
+        <create-relationship @created="updateView"></create-relationship>
+        <create-animal @created="updateView"></create-animal>
+        <create-label @created="updateView"></create-label>
     </div>
   </div>
 </template>
 
 <script>
 
-import { getPeople } from './repository'
-import { getAnimals } from './repository'
-import { getRelationship } from './repository'
-import { getRelationshipTypes } from './repository'
-import { getRaces } from './repository'
-import { getSpecies } from './repository'
+import repository from './repository.js'
 import CreatePerson from './components/CreatePerson'
 import CreateAnimal from './components/CreateAnimal'
 import CreateLabel from './components/CreateLabel'
@@ -71,6 +72,7 @@ export default {
     CreateRelationship,
     GraphVisualization
   },
+  mixins: [repository],
   data(){
     return {
       people : [],
@@ -82,13 +84,23 @@ export default {
     }
   },
   mounted() {
-    getRaces().then(data => this.races = data).catch((err => console.log(err)))
-    getSpecies().then(data => this.species = data).catch((err => console.log(err)))
-    getRelationshipTypes().then(data => this.relationshipTypes = data).catch((err => console.log(err)))
-    getPeople().then(data => this.people = data).catch((err => console.log(err)))
-    getAnimals().then(data => this.animals = data).catch((err => console.log(err)))
-    getRelationship().then(data => this.relationships = data).catch((err => console.log(err)))
-  }
+    this.getRaces().then(data => this.races = data).catch((err => console.log(err)))
+    this.getSpecies().then(data => this.species = data).catch((err => console.log(err)))
+    this.getRelationshipTypes().then(data => this.relationshipTypes = data).catch((err => console.log(err)))
+    this.getPeople().then(data => this.people = data).catch((err => console.log(err)))
+    this.getAnimals().then(data => this.animals = data).catch((err => console.log(err)))
+    this.getRelationship().then(data => this.relationships = data).catch((err => console.log(err)))
+  },
+  methods: {
+    updateView(){
+      this.getRaces().then(data => this.races = data).catch((err => console.log(err)))
+      this.getSpecies().then(data => this.species = data).catch((err => console.log(err)))
+      this.getRelationshipTypes().then(data => this.relationshipTypes = data).catch((err => console.log(err)))
+      this.getPeople().then(data => this.people = data).catch((err => console.log(err)))
+      this.getAnimals().then(data => this.animals = data).catch((err => console.log(err)))
+      this.getRelationship().then(data => this.relationships = data).catch((err => console.log(err)))  
+    }
+  },
 }
 </script>
 

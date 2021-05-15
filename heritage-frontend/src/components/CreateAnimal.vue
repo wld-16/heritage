@@ -35,12 +35,11 @@
 
 <script>
 
-import { createAnimal } from '../repository'
-import { getRaces } from '../repository'
-import { getSpecies } from '../repository'
+import repository from '../repository'
 
 export default {
   name: 'create-animal',
+  mixins: [ repository ],
   data(){
     return {
       name: '',
@@ -55,14 +54,14 @@ export default {
   methods: {
     create(){
       let data = { name: this.name, isAlive: this.isAlive, sex: this.sex, race: this.race, species: this.species }
-      createAnimal(data).then(data => {
-        this.$emit('createAnimal', data.person);
+      this.createAnimal(data).then(() => {
+        this.$emit('createAnimal');
       }). catch(err => console(err.message));
     }
   },
   mounted(){
-    getRaces().then(data => this.allRaces = data)
-    getSpecies().then(data => this.allSpecies = data)
+    this.getRaces().then(data => this.allRaces = data)
+    this.getSpecies().then(data => this.allSpecies = data)
   }
 }
 </script>
