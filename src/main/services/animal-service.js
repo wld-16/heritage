@@ -6,7 +6,7 @@ class AnimalService {
 		return client.query("select * from Animal",[])
 	}
 	createAnimal(values) {
-		const insertQuery = "INSERT INTO Animal(id, name, isAlive, sex,species_id, race_id) values (nextval('animal_id_seq'), $1, $2, $3, $4, $5) returning *";
+		const insertQuery = "INSERT INTO Animal(id, name, isAlive, sex, species_id, race_id) values (nextval('animal_id_seq'), $1, $2, $3, $4, $5) returning *";
 		return client.query(insertQuery, values)
 	}
 	deleteAnimal(id) {

@@ -14,7 +14,7 @@
           <h2>Relationship</h2>
           <li v-for="relationship in relationships" :key="relationship.id">
             {{ relationship }}
-            <button @click="deleteRelationship(relationship.id).then(() => updateView())">delete</button>
+            <button @click="deleteRelationship(relationship).then(() => updateView())">delete</button>
           </li>
         </div>
         <div v-if="animals">
@@ -33,7 +33,7 @@
         </div>
         <div v-if="races">
           <h2>Races</h2>
-          <li v-for="race in races" :key="race">
+          <li v-for="race in races" :key="race.id">
             {{ race }}
             <button @click="deleteRace(race.id).then(() => updateView())">delete</button>
           </li>
@@ -42,7 +42,7 @@
           <h2>Relationship Types</h2>
           <li v-for="relationshipType in relationshipTypes" :key="relationshipType.id">
             {{ relationshipType }}
-            <button @click="deleteRelationshipType(relationshipType.id).then(() => updateView())">delete</button>
+            <button @click="deleteRelationshipType(relationshipType).then(() => updateView())">delete</button>
           </li>
         </div>
         <create-person @created="updateView"></create-person>

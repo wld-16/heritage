@@ -26,4 +26,4 @@ services:
     ports: 
       - "35432:${PG_PORT}"
     volumes:
-      - ./src/res/db/postgres/V1__Baseline.sql:/docker-entrypoint-initdb.d/V1__Baseline.sql
+      - ./src/res/db/postgres:/docker-entrypoint-initdb.d

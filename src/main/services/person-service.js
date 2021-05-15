@@ -18,12 +18,17 @@ class PersonService {
 		return client.query("select * from Person_Person_Relationship",[])
 	}
 	createRelationship(person_1_id, person_2_id, relationship_id) {
-		const insertQuery = "INSERT INTO Person_Person_Relationship(id, person_from_id, person_to_id, relationship_id) values (nextval('person_person_relationship_id_seq'), $1, $2, $3) returning *";
+		const insertQuery = "INSERT INTO Person_Person_Relationship(id, person_from_id, person_to_id, relationship_id) values (ROW($3, $1, $2), $1, $2, $3) returning *";
 		var values = [person_1_id, person_2_id, relationship_id]
 		return client.query(insertQuery, values)
 	}	
-	deleteRelationship(id) {
-		return client.query("delete from Person_Person_Relationship ppr where ppr.id = $1", [id])
+	deleteRelationship(relationship_id, person_from_id, person_to_id) {
+		const deleteQuery = "delete from Person_Person_Relationship ppr where (id).relationship_id = $1 AND (id).from_id = $2 AND (id).to_id = $3";
+		return client.query(deleteQuery, [relationship_id, person_from_id, person_to_id]).then(() => {
+			client.query("select * from Relationship r where r.id = $1 LIMIT 1", [relationship_id]).then(data => {
+				client.query(deleteQuery, [data.rows[0].opposite_id, person_to_id, person_from_id])
+			})
+		})
 	}
 
 	// Relationship Types
@@ -33,8 +38,9 @@ class PersonService {
 	findRelationshipTypeById(id) {
 		return client.query("select * from Relationship r where r.id = $1", [id])
 	}
-	deleteRelationshipType(id) {
-		return client.query("delete from Relationship r where r.id = $1", [id])
+	deleteRelationshipType(relationshipType) {
+		const deleteQuery = "delete from Relationship r where r.id = $1";
+		return client.query(deleteQuery, [relationshipType.id]).then(() => client.query(deleteQuery, [relationshipType.opposite_id]))
 	}
 	createMainRelationshipType(label) {		
 		const insertQuery = "INSERT INTO Relationship(id, label, opposite_id) values (nextval('relationship_id_seq'), $1, nextval('relationship_id_seq')) returning *";

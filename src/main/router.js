@@ -81,7 +81,6 @@ router.post('/api/race/create', (req, res) => {
 })
 
 router.post('/api/race/delete', (req, res) => {
-	console.log("deleting: " + req.body.id)
 	animalService.deleteRace(req.body.id)
 		.then(data => res.send(true))
 		.catch(err => { console.log("OnDeleteRace: " + err)} )
@@ -107,6 +106,13 @@ router.post('/api/relationship-label/create', (req, res) => {
 		.catch(err => { console.log("OnCreateRelationship: " + err) })
 })
 
+router.post('/api/relationship-label/delete', (req, res) => {
+	console.log("deleting: " + req.body)
+	personService.deleteRelationshipType(req.body)
+		.then(data => res.send(true))
+		.catch(err => { console.log("OnDeleteRace: " + err)} )
+})
+
 router.get('/api/relationship/list', (req, res) => {
 	personService.getAllRelationships()
 		.then(data => res.send(data.rows))
@@ -114,7 +120,8 @@ router.get('/api/relationship/list', (req, res) => {
 })
 
 router.post('/api/relationship/delete', (req, res) => {
-	personService.deleteRelationship(req.body.id)
+	console.log(req.body)
+	personService.deleteRelationship(req.body.relationship_id, req.body.person_from_id, req.body.person_to_id)
 	.then(data => res.send(true))
 	.catch(err => { console.log("OnDeleteRelationship: " + err)} )
 })

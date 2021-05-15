@@ -66,10 +66,8 @@ export default {
 				opposite_label: data.opposite_label
 			}).then(response => response.data).catch(err => Promise.reject(err.message));
 		},
-		deleteRelationshipType: function(id) {
-			return axios.post(`${BASE_URL}/api/relationship-label/delete`, {
-				id: id
-			}).then(response => response.data )	
+		deleteRelationshipType: function(relationshipType) {
+			return axios.post(`${BASE_URL}/api/relationship-label/delete`, relationshipType).then(response => response.data )	
 		},
 
 		// Race
@@ -92,10 +90,8 @@ export default {
 		getRelationship: function() {
 			return axios.get(`${BASE_URL}/api/relationship/list`).then(response => response.data);
 		},
-		deleteRelationship: function(id) {
-			return axios.post(`${BASE_URL}/api/relationship/delete`, {
-				id: id
-			}).then(response => response.data )	
+		deleteRelationship: function(relationship) {
+			return axios.post(`${BASE_URL}/api/relationship/delete`, relationship).then(response => response.data )	
 		},
 		createRelationship: function(data) {
 			return axios.post(`${BASE_URL}/api/relationship/create`, { 
