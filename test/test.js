@@ -95,7 +95,6 @@ describe('TreeStructure', function() {
 					]
 				})).then(data => {
 				// Then
-				console.log(data)
 				assert.equal(Math.max(...data.map(branch => Math.max(...branch.done.map(el => el.l)))), 1)
 			})
 		})
@@ -200,9 +199,6 @@ describe('TreeStructure', function() {
 			    arr = [...tempArr]
 			    
 			}
-
-
-			//console.log(JSON.stringify(gens))
 		
 			// When
 			return Promise.all(
