@@ -20,37 +20,42 @@ class TreeStructure {
 		} 
 		*/
 		return relationshipPromise
-}
+	}
+
+	getJsonParents(person){
+		return new Promise(function(resolve, reject) {
+    		resolve(person["parents"]);
+  		});
+	}
 
 	// TODO: Debug
-	recursiveFunction(person, countsArray, backtrack) {
-		countsArray[0].l = countsArray[0].l + 1
-		countsArray[0].path = countsArray[0].path + person.forname + "-> "
-		return this.getParentsOf(person).then(parents => {
+	recursiveFunction(person, countsArray, backtrack, parentsFunction) {
+		countsArray.currentElement.l = countsArray.currentElement.l + 1
+		countsArray.currentElement.path = countsArray.currentElement.path + person.forname + "-> "
+
+		return parentsFunction(person).then(parents => {
 			if(parents.length == 0) {
-				if(backtrack.length == 0){
+				if(backtrack.length == 0) {
 					// Finish
-					countsArray.push(countsArray[0])
-					countsArray.shift()
-					//console.log("count arrays")
-					//console.log(countsArray)
+					countsArray.done.push(countsArray.currentElement)
+					countsArray.currentElement = {}
 					return countsArray
 				} else {
 					// Track next element from backtrack
-					countsArray[0] = backtrack.shift()
-					let nextPerson = backtrack.shift()
-					countsArray.push(countsArray[0])
-					return this.recursiveFunction(nextPerson, countsArray, backtrack)
+					countsArray.done.push(Object.assign({}, countsArray.currentElement))
+					let nxt = backtrack.shift()
+					countsArray.currentElement.l = nxt.el.l
+					countsArray.currentElement.path = nxt.el.path
+					return this.recursiveFunction(nxt.person, countsArray, backtrack, parentsFunction)
 				}
 			} else { 
 				// Process next parents
 				let nextPerson = parents.shift()
 
 				parents.forEach(parent => {
-					backtrack.push(countsArray[0])
-					backtrack.push(parent)
+					backtrack.push({el: {l: countsArray.currentElement.l, path: countsArray.currentElement.path}, person: parent})
 				})
-				return this.recursiveFunction(nextPerson, countsArray, backtrack)
+				return this.recursiveFunction(nextPerson, countsArray, backtrack, parentsFunction)
 			}
 		})
 	}
@@ -62,12 +67,17 @@ class TreeStructure {
 	countJsonMaxDepth(childlessPeople) {
 		let childlessPeopleArr = childlessPeople.childlessPeople
 		let depths = []
-		childlessPeopleArr.forEach(childlessPerson => {
-			this.recursiveFunction(childlessPerson, [0], []).then()
-		})
-		depths = [].concat.apply([], depths)
-		
-		return Math.max(...depths)
+		if(childlessPeopleArr.length !== 0){
+			let count = childlessPeopleArr.map(childlessPerson => {
+				return this.recursiveFunction(childlessPerson, {currentElement:{l:0,path:""}, done:[]}, [], this.getJsonParents)
+			})
+			return count
+		} else {
+			let count = [new Promise(function(resolve, reject){
+				return resolve( { done: [ { l: 0} ] } )
+			})]
+			return count
+		}
 	}
 
 	async asyncForEach(array, callback) {
@@ -81,7 +91,7 @@ class TreeStructure {
 			//console.log(childlessPeopleData.rows)
 			let depths = []
 			let count = childlessPeopleData.rows.map(entry => {
-				return this.recursiveFunction(entry, [{l:0,path:""}], [])
+				return this.recursiveFunction(entry, {currentElement:{l:0,path:""}, done:[]}, [], this.getParentsOf)
 			})
 			return count
 			
