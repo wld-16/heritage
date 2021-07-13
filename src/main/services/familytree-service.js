@@ -1,24 +1,11 @@
 const client = require('../db')
 
 class TreeStructure {
-	hello() {
-		return "hello"
-	}
-
-// TODO: Get parents with query join
 	getParentsOf(person){
-		let relationshipQuery = "select p.id, p.forname, p.surname, r.label, ppr.person_to_id, ppr.person_from_id from person p inner join person_person_relationship ppr on p.id = ppr.person_from_id inner join relationship r on r.id = ppr.relationship_id where r.label = 'parent' and ppr.person_to_id = $1"
+		let relationshipQuery = "select p.id, p.forname, p.surname, r.label, p.birthdate, ppr.person_to_id, ppr.person_from_id from person p inner join person_person_relationship ppr on p.id = ppr.person_from_id inner join relationship r on r.id = ppr.relationship_id where r.label = 'parent' and ppr.person_to_id = $1"
 		let relationshipPromise = client.query(relationshipQuery, [person.id]).then(relationshipData => {
 			return relationshipData.rows
 		})
-		/*
-		const getEachParentPerson = () =>{
-			return await data.rows.map(entry => {
-				let data = await client.query("select * from person where id = $1", [entry.person_from_id])
-				return data.rows[0]
-			})	
-		} 
-		*/
 		return relationshipPromise
 	}
 
@@ -28,10 +15,10 @@ class TreeStructure {
   		});
 	}
 
-	// TODO: Debug
 	recursiveFunction(person, countsArray, backtrack, parentsFunction) {
 		countsArray.currentElement.l = countsArray.currentElement.l + 1
-		countsArray.currentElement.path = countsArray.currentElement.path + person.forname + "-> "
+		let bday = new Date(person.birthdate)
+		countsArray.currentElement.path = countsArray.currentElement.path + '{"forname":"' + person.forname + '","surname":"'+ person.surname + '","bday":"' + bday.getFullYear() + '-' + bday.getMonth() + '-' + bday.getDate() + '","parent":'
 
 		return parentsFunction(person).then(parents => {
 			if(parents.length == 0) {
@@ -88,28 +75,11 @@ class TreeStructure {
 
 	countMaxDepth() {
 		return this.getChildlessPeople().then(childlessPeopleData => {
-			//console.log(childlessPeopleData.rows)
 			let depths = []
 			let count = childlessPeopleData.rows.map(entry => {
 				return this.recursiveFunction(entry, {currentElement:{l:0,path:""}, done:[]}, [], this.getParentsOf)
 			})
 			return count
-			
-			/*const start = async () => {
-				await this.asyncForEach(childlessPeopleData.rows, async (person) => {
-					let entry = await this.recursiveFunction(person, [0], [])
-					depths.push(entry)
-				})
-
-				//console.log("after foreach")
-				//console.log(depths)
-
-				depths = [].concat.apply([],depths)
-				//console.log(depths)
-				console.log("end")
-				console.log(Math.max(...depths))
-			}
-			start()*/
 		})
 	}
 }

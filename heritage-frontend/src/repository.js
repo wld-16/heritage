@@ -99,6 +99,11 @@ export default {
 				person_2_id: data.person_2_id,
 				relationship_label_id: data.relationship_id 
 			}).then(response => response.data).catch(err => Promise.reject(err.message));
+		},
+
+		// Get Branches
+		getBranches: function() {
+			return axios.get(`${BASE_URL}/api/family-tree/maxHeight`).then(response => response.data )
 		}
 	}
 }
