@@ -1,5 +1,7 @@
 <template>
-	<div>link</div>
+	<span>
+		->
+	</span>
 </template>
 
 <script>

@@ -142,11 +142,10 @@ router.post('/api/relationship/create', (req, res) => {
 })
 
 router.get('/api/family-tree/maxHeight', (req, res) => {
-	console.log("Count max depth")
 	familyTreeService.countMaxDepth().then(promises => {
 		Promise.all(promises).then(values => {
 			res.send({branches: values.map(d => d.done).flat().map(node => {
-				node.path = node.path.slice(0, node.path.length-10) + ("}".repeat(node.l))
+				node.path = node.path.slice(0, node.path.length-9) + ("}".repeat(node.l))
 				return node
 			}), max: "" + Math.max(...values.map(d => d.done).flat().map(node => node.l))})
 		})
