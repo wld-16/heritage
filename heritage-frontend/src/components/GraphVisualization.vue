@@ -6,14 +6,28 @@
 					<branch :branchData="branch"></branch>
 				</tr>
 				<br>
-					<svg id="svgelem" height="500" width="1500">
-						<template v-for="node in renderNodes">
-							<text :x="node.x * 300 + 20" :y="node.y * 100 + 20" fill="red" :key="node.id">{{ node.name }} ({{ node.bday }})</text>
-							<template v-if="node.parents.filter(parent => parent != undefined).length > 0">
-								<line v-for="parentNode in node.parents" :x1="node.x * 300 + 100" :x2="renderNodes.filter(node => node.name === parentNode)[0].x * 300 + 100" :y1="node.y * 100" :y2="renderNodes.filter(node => node.name === parentNode)[0].y * 100 + 30" style="stroke:rgb(255,0,0);stroke-width:2" :key="parentNode.id"></line>
-							</template>
+				<svg v-if="renderBiologicalTree && renderNodes.length > 0" id="svgelem" height="500" width="1500">
+					<template v-for="node in renderNodes">
+						<text :x="node.x * 300 + 20" :y="node.y * 100 + 20" fill="red" :key="node.id">{{ node.name }} ({{ node.bday }})</text>
+						<template v-if="node.parents.filter(parent => parent != undefined).length > 0">
+							<line v-for="parentNode in node.parents" :x1="node.x * 300 + 100" :x2="renderNodes.filter(node => node.name === parentNode)[0].x * 300 + 100" :y1="node.y * 100" :y2="renderNodes.filter(node => node.name === parentNode)[0].y * 100 + 30" style="stroke:rgb(255,0,0);stroke-width:2" :key="parentNode.id"></line>
 						</template>
-					</svg>
+					</template>
+				</svg>
+				<svg v-if="renderFamilyTree && renderNodes.length > 0" id="svgelem" height="500" width="1500">
+					<template v-for="node in nodesWithSiblings">
+						<text :x="node.x * 300 + 20" :y="node.y * 100 + 20" fill="red" :key="node.id">{{ node.name }} ({{ node.bday }})</text>
+						<template v-if="node.parents.filter(parent => parent != undefined).length == 2">
+							<line :x1="renderNodes.filter(filterNode => filterNode.name === node.parents[1])[0].x * 300 + 100" :x2="renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].x * 300 + 100" :y1="renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].y * 100 + 30" :y2="renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].y * 100 + 30" style="stroke:rgb(255,0,0);stroke-width:2" :key="node.id"></line>
+						</template>
+						<template v-else-if="node.parents.filter(parent => parent != undefined).length == 1">
+							<line v-for="parentNode in node.parents" :x1="node.x * 300 + 100" :x2="renderNodes.filter(node => node.name === parentNode)[0].x * 300 + 100" :y1="node.y * 100" :y2="renderNodes.filter(node => node.name === parentNode)[0].y * 100 + 30" style="stroke:rgb(255,0,0);stroke-width:2" :key="parentNode.id"></line>
+						</template>
+						<template v-if="node.siblings.filter(sibling => sibling != undefined).length > 0">
+							<line :x1="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[node.siblings.length - 1])[0].x * 300 + 100" :x2="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[0])[0].x * 300 + 100" :y1="node.y * 100 - 10" :y2="node.y * 100 - 10" style="stroke:rgb(255,0,0);stroke-width:2" :key="node.id"></line>
+						</template>
+					</template>
+				</svg>
 				<br>
 			</tbody>
 		</table>
@@ -38,7 +52,12 @@
 				levels: new Map(),
 				xMax: 0,
 				levelsWithX: new Map(),
-				renderNodes: []
+				renderNodes: [],
+				renderBiologicalTree: true,
+				renderFamilyTree: true,
+				nodesWithSiblings: [],
+				groupedFamilyNodes: [],
+				nodeWithChildren: []
 			}
 		},
 		components: {
@@ -61,7 +80,7 @@
 						if(branch.levels.map(pEntry => pEntry.name).includes(procBranch.name)){
 							procBranch.parents = procBranch.parents.concat(...branch.levels.filter(lBranch => lBranch.name === procBranch.name && !lBranch.parents.includes(...procBranch.parents)).map(lBranch => lBranch.parents))
 							return procBranch
-						}
+						} 
 						return procBranch
 					})
 					processedBranches.push(...branch.levels.filter(entry => !processedBranches.map(pEntry => pEntry.name).includes(entry.name)))
@@ -103,16 +122,34 @@
 				return returnList
 			},
 			calculateXPositions(){
-				Object.entries(this.levels).forEach(entry => {
-					this.levels[entry[0]] = this.levels[entry[0]].map((node, index) => {
+				Object.keys(this.levels).forEach(entry => {
+					this.levels[entry] = this.levels[entry].map((node, index) => {
 						node.x = index
 						return node
 					})
 				})
 				this.levelsWithX = this.levels
-				this.renderNodes = Object.values(this.levelsWithX).flatMap(entry => entry)
-				console.log(this.levelsWithX)
-				console.log(this.renderNodes)
+				this.renderNodes = Object.values(this.levelsWithX).flatMap(entry => entry).map(node => {
+					node.parents = [...new Set(node.parents.filter(parent => parent != null))]
+					return node
+				})
+				
+				this.calculateSiblings()
+				this.calculateChildren()
+				this.groupNodeFamilies()
+			},
+			calculateChildren(){
+				this.nodeWithChildren = this.renderNodes.map(node => {
+					node.children = this.renderNodes.filter(filterNode => filterNode.parents.includes(node.name)).map(childrenNode => childrenNode.name)
+					return node
+				})
+				//console.log(this.nodeWithChildren)
+			},
+			calculateSiblings(){
+				this.nodesWithSiblings = this.renderNodes.map(node => {
+					node.siblings = this.renderNodes.filter(filterNode => node.parents.length !=0 && filterNode.name !== node.name && node.parents.toString() === filterNode.parents.toString()).map(siblingNode => siblingNode.name)
+					return node
+				})
 			},
 			calculateYOffset(branch, processedBranches, index){
 				const indexOf = processedBranches.map(pEntry => pEntry.name).indexOf(branch.forname + " " + branch.surname)
@@ -127,6 +164,94 @@
 				} else {
 					return processedBranches[indexOf].y - index
 				}
+			},
+			groupNodeFamilies(){
+				let outputNodes = []
+				new Set(this.nodesWithSiblings.map(node => node.y)).forEach(level => {
+					let levelNodes = this.nodesWithSiblings.filter(node => node.y === level)
+					let familyNodes = levelNodes.map(node => levelNodes.filter(filterNode => filterNode.parents.length !== 0 && filterNode.parents.toString() === node.parents.toString())).filter(family => family.length !== 0).concat(levelNodes.filter(node => node.parents.length === 0).map(node => [node]))
+					let levelFamilies = []
+					familyNodes.forEach(family => {
+						if(!levelFamilies.map(entry => entry.map(n => n.name).toString()).includes(family.map(n => n.name).toString())){
+							levelFamilies.push(family)
+						}
+					})
+					outputNodes.push(levelFamilies)
+				})
+				this.groupedFamilyNodes = outputNodes.map(entry => {
+					let index = 0
+					return entry.map(family => {
+						return family.map(node => {
+							node.x = index
+							index += 1
+							return node
+						})
+					})
+				})
+
+
+				// Bottom Up approach
+				let levels = new Set(this.nodesWithSiblings.map(node => node.y))
+				let levelArray = [...levels]
+
+
+				let bottomToTopReverse = []
+
+				levelArray.reverse().forEach(level => {
+					bottomToTopReverse.push([...this.nodesWithSiblings.filter(node => node.y === level).map(node => {
+						return this.nodesWithSiblings.filter(filterNode => filterNode.y === node.y - 1 && node.parents.map(parentName => parentName === filterNode.name).includes(true))
+					})].filter(arrayElement => arrayElement.length > 0))
+				})
+				// merge bottom up/ with top down
+
+				// let mergedNodes
+
+				let topToBotton = levelArray.map(level => this.nodesWithSiblings.filter(filterNode => filterNode.y === level))
+
+				//console.log(topToBotton)
+				//console.log(bottomToTopReverse.filter(node => node.length > 0).reverse())
+
+				let unsortedFamilyLevels = topToBotton.map((level, index) => {
+					if(index > 0){
+						let nodesWithChildren = level.map(node => bottomToTopReverse[index - 1].filter(filterFamily => filterFamily.map(filterNode => filterNode.name === node.name).includes(true)))
+						return nodesWithChildren.concat(level.filter(node => node.children.length === 0).map(node => [node])).filter(family => family.length != 0)
+					}
+					return level
+				}).map(levelWithDuplicates => {
+					// Remove if already contains
+					let outputLevel = []
+					levelWithDuplicates.flatMap(entry => entry).forEach(family => {
+						// Add if not contains
+						if(outputLevel.length === 0 || outputLevel.filter(outputFamily => JSON.stringify(outputFamily) === JSON.stringify(family)).length === 0){
+							outputLevel.push(family)
+						}
+					})
+					return outputLevel.map(family => family.length === undefined ? [family] : family)
+				})
+				this.familyWithBaseOrderTree = this.xPositionsWithFamilyAdjustment(unsortedFamilyLevels.map((level, index) => {
+					if(index > 0){
+						return this.reorderByChildren(unsortedFamilyLevels[index - 1], level)
+					}
+					return level
+				}))
+			},
+			xPositionsWithFamilyAdjustment(tree) {
+				console.log(tree)
+			},
+			reorderByChildren(childrenLayer, parentLayer) {
+				let parentsByChildrenTree = [...new Set(childrenLayer.flatMap(entry => entry).flatMap(child => child.parents).concat(parentLayer.flatMap(entry => entry).flatMap(parent => parent.siblings)))].map((parentName, index) => {
+					let parent = parentLayer.flatMap(entry => entry).filter(parent => parent.name === parentName)[0]
+					parent.x = index
+					return parent
+				})
+				return parentsByChildrenTree.map(parent => {
+					console.log(parent)
+					if(parent.siblings.length > 0 && parent.siblings.map(siblingName => Math.abs(parentsByChildrenTree.filter(filterNode => filterNode.name === siblingName)[0].x - parent.x) === 1).includes(false)){
+						// TODO: Swap when a swap with husband makes sense
+						//parent.x = Math.sign(parentsByChildrenTree.filter(filterNode => filterNode.name === parent.siblings[0])[0])
+					}
+					return parent
+				})
 			},
 			checkNameExistsInBranchRecursive(branch, checkName){
 				if(branch.child === undefined) {
