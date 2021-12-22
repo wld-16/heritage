@@ -6,25 +6,111 @@
 					<branch :branchData="branch"></branch>
 				</tr>
 				<br>
-				<svg v-if="renderBiologicalTree && renderNodes.length > 0" id="svgelem" height="500" width="1500">
+				<svg v-if="renderBiologicalTree && renderNodes.length > 0" id="svgelem" height="1000" width="1500">
 					<template v-for="node in renderNodes">
-						<text :x="node.x * 300 + 20" :y="node.y * 100 + 20" fill="red" :key="node.id">{{ node.name }} ({{ node.bday }})</text>
+						<text :x="node.x * xSpacing + 20" :y="node.y * ySpacing + 20" fill="red" :key="node.id">{{ node.name }} ({{ node.bday }})</text>
 						<template v-if="node.parents.filter(parent => parent != undefined).length > 0">
-							<line v-for="parentNode in node.parents" :x1="node.x * 300 + 100" :x2="renderNodes.filter(node => node.name === parentNode)[0].x * 300 + 100" :y1="node.y * 100" :y2="renderNodes.filter(node => node.name === parentNode)[0].y * 100 + 30" style="stroke:rgb(255,0,0);stroke-width:2" :key="parentNode.id"></line>
+							<line
+								v-for="parentNode in node.parents" 
+								:x1="node.x * xSpacing + 100" 
+								:x2="renderNodes.filter(node => node.name === parentNode)[0].x * xSpacing + 100" 
+								:y1="node.y * ySpacing" 
+								:y2="renderNodes.filter(node => node.name === parentNode)[0].y * ySpacing + 30" 
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="parentNode.id"
+							/>
 						</template>
 					</template>
 				</svg>
-				<svg v-if="renderFamilyTree && renderNodes.length > 0" id="svgelem" height="500" width="1500">
+				<svg v-if="renderFamilyTree && renderNodes.length > 0" id="svgelem" height="1000" width="1500">
 					<template v-for="node in nodesWithSiblings">
-						<text :x="node.x * 300 + 20" :y="node.y * 100 + 20" fill="red" :key="node.id">{{ node.name }} ({{ node.bday }})</text>
-						<template v-if="node.parents.filter(parent => parent != undefined).length == 2">
-							<line :x1="renderNodes.filter(filterNode => filterNode.name === node.parents[1])[0].x * 300 + 100" :x2="renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].x * 300 + 100" :y1="renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].y * 100 + 30" :y2="renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].y * 100 + 30" style="stroke:rgb(255,0,0);stroke-width:2" :key="node.id"></line>
+						<text :x="node.x * xSpacing + 20" :y="node.y * ySpacing + 20" fill="red" :key="node.id">{{ node.name }} ({{ node.bday }})</text>
+						<template v-if="node.parents.filter(parent => parent !== undefined).length == 2">
+							<line class="between-partners"
+								:x1="renderNodes.filter(filterNode => filterNode.name === node.parents[1])[0].x * xSpacing + 100" 
+								:x2="renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].x * xSpacing + 100" 
+								:y1="renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].y * ySpacing + 30" 
+								:y2="renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].y * ySpacing + 30" 
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="node.id"
+							/>
+							<line class="parents-child"
+								:x1="(renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].x * xSpacing + 100) + ((renderNodes.filter(filterNode => filterNode.name === node.parents[1])[0].x * xSpacing + 100) - (renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].x * 300 + 100)) / 2" 
+								:x2="(renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].x * xSpacing + 100) + ((renderNodes.filter(filterNode => filterNode.name === node.parents[1])[0].x * xSpacing + 100) - (renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].x * 300 + 100)) / 2" 
+								:y1="renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].y * ySpacing + 30" 
+								:y2="renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].y * ySpacing + 30 + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * 7" 
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="node.id"
+							/>
+							<line class="parents-child"
+								:x1="(renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].x * xSpacing + 100) + ((renderNodes.filter(filterNode => filterNode.name === node.parents[1])[0].x * xSpacing + 100) - (renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].x * 300 + 100)) / 2" 
+								:x2="node.x * xSpacing + 100" 
+								:y1="renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].y * ySpacing + 30 + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * 7" 
+								:y2="renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].y * ySpacing + 30 + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * 7" 
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="node.id"
+							/>
+							<line class="parents-child"
+								:x1="node.x * xSpacing + 100" 
+								:x2="node.x * xSpacing + 100" 
+								:y1="renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].y * ySpacing + 30 + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * 7" 
+								:y2="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name) : 1) + siblingsLineDown" 
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="node.id"
+							/>	
+							<line class="parent-indicator"
+								:x1="renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].x * xSpacing + 100" 
+								:x2="renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].x * xSpacing + 100" 
+								:y1="renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].y * ySpacing + 30" 
+								:y2="renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].y * ySpacing + 30 - partnersLineUp" 
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="node.id"
+							/>
+							<line class="parent-indicator"
+								:x1="renderNodes.filter(filterNode => filterNode.name === node.parents[1])[0].x * xSpacing + 100" 
+								:x2="renderNodes.filter(filterNode => filterNode.name === node.parents[1])[0].x * xSpacing + 100" 
+								:y1="renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].y * ySpacing + 30" 
+								:y2="renderNodes.filter(filterNode => filterNode.name === node.parents[0])[0].y * ySpacing + 30 - partnersLineUp" 
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="node.id"
+							/>
 						</template>
 						<template v-else-if="node.parents.filter(parent => parent != undefined).length == 1">
-							<line v-for="parentNode in node.parents" :x1="node.x * 300 + 100" :x2="renderNodes.filter(node => node.name === parentNode)[0].x * 300 + 100" :y1="node.y * 100" :y2="renderNodes.filter(node => node.name === parentNode)[0].y * 100 + 30" style="stroke:rgb(255,0,0);stroke-width:2" :key="parentNode.id"></line>
+							<line class="parent-single"
+								v-for="parentNode in node.parents" 
+								:x1="node.x * xSpacing + 100" 
+								:x2="renderNodes.filter(node => node.name === parentNode)[0].x * xSpacing + 100" 
+								:y1="node.y * ySpacing"
+								:y2="renderNodes.filter(node => node.name === parentNode)[0].y * ySpacing + 30"
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="parentNode.id"
+							/>
 						</template>
-						<template v-if="node.siblings.filter(sibling => sibling != undefined).length > 0">
-							<line :x1="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[node.siblings.length - 1])[0].x * 300 + 100" :x2="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[0])[0].x * 300 + 100" :y1="node.y * 100 - 10" :y2="node.y * 100 - 10" style="stroke:rgb(255,0,0);stroke-width:2" :key="node.id"></line>
+						<template v-if="node.siblings.filter(sibling => sibling != undefined).length > 0 && false">
+							<line class="siblings"
+								:x1="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[node.siblings.length - 1])[0].x * xSpacing + 100" 
+								:x2="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[0])[0].x * xSpacing + 100" 
+								:y1="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name) : 1) * siblingsDelta" 
+								:y2="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name) : 1) * siblingsDelta" 
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="node.id" 
+							/>
+							<line class="sibling-indicator"
+								:x1="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[0])[0].x * xSpacing + 100" 
+								:x2="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[0])[0].x * xSpacing + 100" 
+								:y1="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name):  1) * siblingsDelta" 
+								:y2="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name): 1) * siblingsDelta + siblingsLineDown" 
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="node.id" 
+							/>
+							<line class="sibling-indicator"
+								:x1="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[node.siblings.length - 1])[0].x * xSpacing + 100" 
+								:x2="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[node.siblings.length - 1])[0].x * xSpacing + 100" 
+								:y1="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name) : 1) * siblingsDelta"
+								:y2="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name) : 1) * siblingsDelta + siblingsLineDown" 
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="node.id" 
+							/>
 						</template>
 					</template>
 				</svg>
@@ -53,11 +139,19 @@
 				xMax: 0,
 				levelsWithX: new Map(),
 				renderNodes: [],
+				xSpacing: 300,
+				ySpacing: 200,
 				renderBiologicalTree: true,
 				renderFamilyTree: true,
 				nodesWithSiblings: [],
 				groupedFamilyNodes: [],
-				nodeWithChildren: []
+				nodeWithChildren: [],
+				topToBottomTree: [],
+				siblingsDelta: 15,
+				siblingsLineDown: 5,
+				partnersDelta: 15,
+				partnersLineUp: 5,
+				parentChildConnectorDelta: 140
 			}
 		},
 		components: {
@@ -143,7 +237,6 @@
 					node.children = this.renderNodes.filter(filterNode => filterNode.parents.includes(node.name)).map(childrenNode => childrenNode.name)
 					return node
 				})
-				//console.log(this.nodeWithChildren)
 			},
 			calculateSiblings(){
 				this.nodesWithSiblings = this.renderNodes.map(node => {
@@ -189,6 +282,7 @@
 					})
 				})
 
+				this.topToBottomTree = outputNodes.map(levelEl => levelEl.flatMap(node => node))
 
 				// Bottom Up approach
 				let levels = new Set(this.nodesWithSiblings.map(node => node.y))
@@ -204,12 +298,8 @@
 				})
 				// merge bottom up/ with top down
 
-				// let mergedNodes
-
 				let topToBotton = levelArray.map(level => this.nodesWithSiblings.filter(filterNode => filterNode.y === level))
 
-				//console.log(topToBotton)
-				//console.log(bottomToTopReverse.filter(node => node.length > 0).reverse())
 
 				let unsortedFamilyLevels = topToBotton.map((level, index) => {
 					if(index > 0){
@@ -228,12 +318,14 @@
 					})
 					return outputLevel.map(family => family.length === undefined ? [family] : family)
 				})
-				this.familyWithBaseOrderTree = this.xPositionsWithFamilyAdjustment(unsortedFamilyLevels.map((level, index) => {
+
+
+				unsortedFamilyLevels.map((level, index) => {
 					if(index > 0){
 						return this.reorderByChildren(unsortedFamilyLevels[index - 1], level)
 					}
-					return level
-				}))
+					return level.flatMap(entry => entry)
+				})
 			},
 			xPositionsWithFamilyAdjustment(tree) {
 				console.log(tree)
@@ -245,7 +337,6 @@
 					return parent
 				})
 				return parentsByChildrenTree.map(parent => {
-					console.log(parent)
 					if(parent.siblings.length > 0 && parent.siblings.map(siblingName => Math.abs(parentsByChildrenTree.filter(filterNode => filterNode.name === siblingName)[0].x - parent.x) === 1).includes(false)){
 						// TODO: Swap when a swap with husband makes sense
 						//parent.x = Math.sign(parentsByChildrenTree.filter(filterNode => filterNode.name === parent.siblings[0])[0])
