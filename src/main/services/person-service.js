@@ -8,6 +8,11 @@ class PersonService {
 	deletePerson(id) {
 		return client.query("delete from Person p where p.id = $1", [id])
 	}
+	hardDeletePerson(person_id) {
+		return client.query("delete from Person_Person_Relationship ppr where (id).from_id = $1 OR (id).to_id = $1", [person_id]).then(() => {
+			return client.query("delete from Person p where p.id = $1", [person_id])
+		})
+	}
 	createPerson(values) {
 		const insertQuery = "INSERT INTO Person(id, forname, surname, birthdate, isAlive, gender) values (nextval('person_id_seq'), $1, $2, $3, $4, $5) returning *";
 		return client.query(insertQuery, values)

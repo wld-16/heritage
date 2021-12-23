@@ -29,6 +29,12 @@ router.post('/api/person/delete', (req, res) => {
 		.catch(err => { console.log("OnDeletePerson: " + err)} )
 })
 
+router.post('/api/person/hard-delete', (req, res) => {
+	personService.hardDeletePerson(req.body.id)
+		.then(data => res.send(true))
+		.catch(err => { console.log("OnDeletePerson: " + err)} )
+})
+
 router.get('/api/animal/list', (req, res) => {
 	animalService.getAllAnimals()
 		.then(data => res.send(data.rows))

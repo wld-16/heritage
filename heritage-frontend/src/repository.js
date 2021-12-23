@@ -13,11 +13,16 @@ export default {
 				surname: data.surname,
 				birthdate: data.birthdate,
 				isAlive : data.isAlive,
-				gender: data.gender 
+				gender: data.gender
 			}).then(response => response.data).catch(err => Promise.reject(err.message));
 		},
 		deletePerson: function(id) {
 			return axios.post(`${BASE_URL}/api/person/delete`, {
+				id: id
+			}).then(response => response.data )	
+		},
+		hardDeletePerson: function(id) {
+			return axios.post(`${BASE_URL}/api/person/hard-delete`, {
 				id: id
 			}).then(response => response.data )	
 		},

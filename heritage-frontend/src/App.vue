@@ -8,6 +8,7 @@
           <li v-for="person in people" :key="person.id">
             {{ person }}
             <button @click="deletePerson(person.id).then(() => updateView())">delete</button>
+            <button @click="hardDeletePerson(person.id).then(() => updateView())">hard-delete</button>
           </li>
         </div>
         <div v-if="relationships">
