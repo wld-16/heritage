@@ -9,6 +9,7 @@ export default {
 		},
 		createPerson: function(data) {
 			return axios.post(`${BASE_URL}/api/person/create`, { 
+				id: data.id,
 				forname: data.forname,
 				surname: data.surname,
 				birthdate: data.birthdate,

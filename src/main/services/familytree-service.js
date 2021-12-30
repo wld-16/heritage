@@ -25,8 +25,7 @@ class TreeStructure {
 
 	recursiveFunction(person, countsArray, backtrack, parentsFunction, relationshipName) {
 		countsArray.currentElement.l = countsArray.currentElement.l + 1
-		let bday = new Date(person.birthdate)
-		countsArray.currentElement.path = countsArray.currentElement.path + '{"forname":"' + person.forname + '","surname":"'+ person.surname + '","bday":"' + bday.getFullYear() + '-' + bday.getMonth() + '-' + bday.getDate() + '","' + relationshipName + '":'
+		countsArray.currentElement.path = countsArray.currentElement.path + '{"forname":"' + person.forname + '","surname":"'+ person.surname + '","bday":"' + person.birthdate + '","' + relationshipName + '":'
 
 		return parentsFunction(person).then(parents => {
 			if(parents.length == 0) {

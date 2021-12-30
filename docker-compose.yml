@@ -5,7 +5,7 @@ services:
     env_file: .env
     build: .
     environment: 
-       DATABASE_URL: postgres://${PG_USER}:${PG_PASSWORD}@db:${PG_PORT}/${PG_DB}
+       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}
        NODE_ENV: development
        DELAYED_INIT: "TRUE"
        PORT: 3000
@@ -18,12 +18,12 @@ services:
     container_name: heritage-db
     env_file: .env
     environment:
-      - POSTGRES_USER=${PG_USER}
-      - POSTGRES_PASSWORD=${PG_PASSWORD}
-      - POSTGRES_ROOT_PASSWORD=${PG_ROOT_PASSWORD}
-      - POSTGRES_DB=${PG_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_ROOT_PASSWORD=${POSTGRES_ROOT_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     image: postgres
     ports: 
-      - "35432:${PG_PORT}"
+      - "35432:${POSTGRES_PORT}"
     volumes:
       - ./src/res/db/postgres:/docker-entrypoint-initdb.d

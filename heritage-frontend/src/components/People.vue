@@ -47,10 +47,9 @@ export default {
     create(){
       let data = { forname: this.forname, surname: this.surname, birthdate: this.birthdate, isAlive: this.isAlive, gender: this.gender }
       this.createPerson(data).then(data => {
-        console.log("emitting event")
         this.$emit('created', data.person);
         this.forname = this.surname = this.gender = '';
-      }). catch(err => console.log(err.message));
+      }).catch(err => console.log(err.message));
     }
   }
 }

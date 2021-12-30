@@ -3,10 +3,10 @@ const client = require('../db')
 class PersonService {
 	// Person
 	getAllPeople() {
-		return client.query("select * from Person",[])
+		return client.query("SELECT * FROM person",[])
 	}
 	deletePerson(id) {
-		return client.query("delete from Person p where p.id = $1", [id])
+		return client.query("DELETE FROM person p WHERE p.id = $1", [id])
 	}
 	hardDeletePerson(person_id) {
 		return client.query("delete from Person_Person_Relationship ppr where (id).from_id = $1 OR (id).to_id = $1", [person_id]).then(() => {
@@ -16,6 +16,10 @@ class PersonService {
 	createPerson(values) {
 		const insertQuery = "INSERT INTO Person(id, forname, surname, birthdate, isAlive, gender) values (nextval('person_id_seq'), $1, $2, $3, $4, $5) returning *";
 		return client.query(insertQuery, values)
+	}
+	updatePerson(id, values) {
+		const updateQuery = "UPDATE Person SET forname = $2, surname = $3, birthdate = $4, isAlive = $5, gender = $6 WHERE id = $1 returning *";
+		return client.query(updateQuery, [id, ...values])
 	}
 
 	// Relationship

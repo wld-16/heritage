@@ -1,3 +1,4 @@
+const pg = require('pg')
 const { Pool, Client } = require('pg')
 const url = require('url')
 const dbConnectionString = process.env.DATABASE_URL || "postgres://sensei:herit12S@localhost:35432/heritage"
@@ -14,7 +15,9 @@ const config = {
   ssl: false
 }
 
-console.log(config)
+pg.types.setTypeParser(1082, function(stringValue) {
+  return stringValue;  //1082 for date type
+})
 
 const pool = new Pool(config)
 

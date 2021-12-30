@@ -12,15 +12,22 @@ const animalService = new AnimalService()
 
 router.get('/api/person/list', (req, res) => {
 	personService.getAllPeople()
-		.then(data => res.send(data.rows))
+		.then(data => { console.log(data.rows.map(entry => new Date(entry.birthdate))) ; res.send(data.rows) })
 		.catch(err => { console.log("OnListPerson: " + err)} )
 })
 
 router.post('/api/person/create', (req, res) => {
+	console.log(req.body)
 	var values = [req.body.forname, req.body.surname, req.body.birthdate, req.body.isAlive, req.body.gender]
-	personService.createPerson(values)
-		.then(data => res.send(true))
+	if(req.body.id === 0){
+		personService.createPerson(values)
+		.then(data => res.send(data))
 		.catch(err => { console.log("OnCreatePerson: " + err)} )
+	} else {
+		personService.updatePerson(req.body.id, values)
+		.then(data => res.send(data))
+		.catch(err => { console.log("OnCreatePerson: " + err)} )
+	}
 })
 
 router.post('/api/person/delete', (req, res) => {
