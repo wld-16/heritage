@@ -8,6 +8,7 @@ package-lock.json
 .env.local
 .env.*.local
 *.env
+*.dockerenv
 
 # Log files
 npm-debug.log*
@@ -23,3 +24,7 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Sensible Data
+*.csv
+

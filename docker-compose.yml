@@ -27,3 +27,4 @@ services:
       - "35432:${POSTGRES_PORT}"
     volumes:
       - ./src/res/db/postgres:/docker-entrypoint-initdb.d
+      - ./src/res/seed/:/seed/
