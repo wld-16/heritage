@@ -1,26 +1,35 @@
 <template>
   <div>
     <section>
-      <h3>Create a Relationship Between two people</h3>
+      <h1>{{ head }}</h1>
       <div>
-        <label for="person_1">Person One:</label>
-        <select v-model="person_1">
-          <option :key="personObject.id" :value="personObject.id" v-for="personObject in allPeople">{{ personObject.forname }} {{ personObject.surname}}</option>
-        </select>
+        <v-select
+          :items="allPeople"
+          label="From"
+          v-model="person_1"
+          item-text="fullname"
+          item-value="id"
+        ></v-select>
+        <v-select
+          :items="allPeople"
+          v-model="person_2"
+          item-text="fullname"
+          item-value="id"
+          label="To"
+        ></v-select>
+        <v-select 
+          v-model="relationship" 
+          :items="allRelationships" 
+          item-text="label" 
+          item-value="id"
+          label="Relationship">
+        </v-select>
       </div>
-      <div>
-        <label for="person_2">Person Two</label>
-        <select v-model="person_2">
-          <option :key="personObject.id" :value="personObject.id" v-for="personObject in allPeople">{{ personObject.forname }} {{ personObject.surname}}</option>
-        </select>
-      </div>
-      <div>
-        <label for="relationship">Relationship</label>
-        <select v-model="relationship">
-          <option :key="relationshipObject.id" :value="relationshipObject.id" v-for="relationshipObject in allRelationships">{{ relationshipObject.label }}</option>
-        </select>
-      </div>
-      <button @click="create" class="button" type="submit">Post</button>
+      <v-btn
+       @click="create" 
+       color="success"
+       class="mr-4">
+     Save</v-btn>
     </section>
   </div>
 </template>
@@ -41,6 +50,12 @@ export default {
       allRelationships : []
     }
   },
+  props: {
+    head: {
+      type: String,
+      default: 'Create a Relationship Between two people'
+    }
+  },
   methods: {
     create(){
       let data = { person_1_id: this.person_1, person_2_id: this.person_2, relationship_id: this.relationship }
@@ -51,7 +66,10 @@ export default {
     }
   },
   mounted() {
-    this.getPeople().then(data => this.allPeople = data)
+    this.getPeople().then(data => this.allPeople = data.map(person => {
+      person.fullname = person.forname + ' ' + person.surname
+      return person
+    }))
     this.getRelationshipTypes().then(data => this.allRelationships = data)
   }
 }

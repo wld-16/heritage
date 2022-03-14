@@ -5,3 +5,5 @@ CREATE TABLE ppr_temp (	id SERIAL NOT NULL,	person_from_id INT NOT NULL REFERENC
 \copy ppr_temp (id,person_from_id, person_to_id,relationship_id) from 'relationships.csv' DELIMITER ';' csv header;
 INSERT INTO person_person_relationship (id, person_from_id, person_to_id, relationship_id) SELECT (person_from_id, person_to_id, relationship_id)::rel_index,person_from_id, person_to_id, relationship_id FROM ppr_temp;
 DROP TABLE ppr_temp;
+select setval('person_id_seq', (select max(id)+1 from person), false);
+select setval('relationship_id_seq', (select max(id)+1 from person), false);

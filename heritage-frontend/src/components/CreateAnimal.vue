@@ -1,35 +1,47 @@
 <template>
   <div>
-   <section>
-      <h1>Create an Animal</h1>
+    <v-form v-model="valid" lazy-validation ref="form">
+      <h1>{{ head }}</h1>
       <div>
-        <input v-model="name" type="text" placeholder="kujo">
+        <v-text-field v-model="name" :rules="nameRules" label="name" :counter="10" required></v-text-field>
       </div>
-      <div>
-        <label for="isAlive">isAlive:</label>
-        <input v-model="isAlive" id="isAlive" type="checkbox" value="true">
-      </div>
-      <div>
-        <label for="sex">sex:</label>
-        <span id="sex">
-          <input v-model="sex" type="radio" value="male" id="sex-male">
-          <label for="gender-male">Male</label>
-          <input v-model="sex" type="radio" value="female" id="sex-female">
-          <label for="sex-female">Female</label>
-        </span>
-      </div>
-      <div>
-        <label for="race">Race:</label>
-        <select v-model="race">
-          <option :key="raceObject.id" :value="raceObject.id" v-for="raceObject in allRaces">{{ raceObject.label }}</option>
-        </select>
-        <label for="species">Species</label>
-        <select v-model="species">
-          <option :key="speciesObject.id" :value="speciesObject.id" v-for="speciesObject in allSpecies">{{ speciesObject.label }}</option>
-        </select>
-      </div>
-      <button @click="create" class="button" type="submit">Post</button>
-    </section>
+      <v-checkbox
+            v-model="isAlive"
+            label="isAlive"
+      ></v-checkbox>
+      <v-radio-group v-model="sex">
+          <v-radio
+            :label="'Female'"
+            :value="'female'"
+          ></v-radio>
+          <v-radio
+            :label="'Male'"
+            :value="'male'"
+          ></v-radio>
+      </v-radio-group>
+      <v-select 
+          v-model="race" 
+          :items="allRaces" 
+          item-text="label" 
+          item-value="id"
+          label="Race">
+      </v-select>
+      <v-select 
+          v-model="species" 
+          :items="allSpecies" 
+          item-text="label" 
+          item-value="id"
+          label="Species">
+      </v-select>
+      <v-btn
+          :disabled="!valid"
+          color="success"
+          class="mr-4"
+          @click="validate"
+        >
+          Save
+        </v-btn>
+    </v-form>
   </div>
 </template>
 
@@ -47,11 +59,28 @@ export default {
       species: 0,
       sex: 'female',
       race: 0,
+      valid: false,
       allRaces : [],
-      allSpecies: []
+      allSpecies: [],
+      nameRules: [
+        v => !!v || 'Name is required',
+        v => v && v.length <= 10 || 'Name must be less than 10 characters',
+      ]
+    }
+  },
+  props: {
+    head: {
+      type: String,
+      default: 'Create an Animal'
     }
   },
   methods: {
+    validate () {
+      console.log(this.$refs.form.validate())
+      if(this.$refs.form.validate()) {
+        this.create()   
+      }
+    },
     create(){
       let data = { name: this.name, isAlive: this.isAlive, sex: this.sex, race: this.race, species: this.species }
       this.createAnimal(data).then(() => {
