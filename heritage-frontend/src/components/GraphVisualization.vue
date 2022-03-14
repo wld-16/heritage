@@ -1,161 +1,167 @@
 <template>
-	<div>
-		<br>
-		<svg v-if="selected === 0 && renderNodes.length > 0" id="svgelem" :height="250 * yMax" :width="250 * (xMax + 1)">
-			<template v-for="node in renderNodes">
-				<text :x="node.x * xSpacing + 20" :y="node.y * ySpacing + 30" fill="red" :key="node.id">{{ node.name }}</text>
-				<template v-if="node.parents.filter(parent => parent != undefined).length > 0">
-					<line
-						v-for="parentNode in node.parents" 
-						:x1="node.x * xSpacing + 100" 
-						:x2="renderNodes.filter(node => node.name === parentNode)[0].x * xSpacing + 100" 
-						:y1="node.y * ySpacing"
-						:y2="renderNodes.filter(node => node.name === parentNode)[0].y * ySpacing + 30" 
-						style="stroke:rgb(255,0,0);stroke-width:2" 
-						:key="parentNode.id"
-					/>
-				</template>
-			</template>
-		</svg>
-		<svg v-if="selected === 1 && renderNodes.length > 0" id="svgelem" :height="250 * yMax" :width="250 * (xMax + 1)">
-			<template v-for="node in nodesWithSiblings">
-				<text :x="node.x * xSpacing + 20" :y="node.y * ySpacing + 20" fill="red" :key="node.id">{{ node.name }}</text>
-				<template v-if="node.parents.filter(parent => parent !== undefined).length == 2">
-					<line class="between-partners"
-						:x1="findParentNodeByName(node.parents[1]).x * xSpacing + xOffset" 
-						:x2="findParentNodeByName(node.parents[0]).x * xSpacing + xOffset" 
-						:y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset" 
-						:y2="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset" 
-						style="stroke:rgb(255,0,0);stroke-width:2" 
-						:key="node.id"
-					/>
-					<line v-if="renderChildrenRelationship" class="parents-child"
-						:x1="(findParentNodeByName(node.parents[0]).x * xSpacing + xOffset) + ((findParentNodeByName(node.parents[1]).x * xSpacing + xOffset) - (findParentNodeByName(node.parents[0]).x * xSpacing + xOffset)) / 2" 
-						:x2="(findParentNodeByName(node.parents[0]).x * xSpacing + xOffset) + ((findParentNodeByName(node.parents[1]).x * xSpacing + xOffset) - (findParentNodeByName(node.parents[0]).x * xSpacing + xOffset)) / 2" 
-						:y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset" 
-						:y2="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * branchDelta" 
-						style="stroke:rgb(255,0,0);stroke-width:1" 
-						:key="node.id"
-					/>
-					<line v-if="renderChildrenRelationship" class="parents-child"
-						:x1="(findParentNodeByName(node.parents[0]).x * xSpacing + xOffset) + ((findParentNodeByName(node.parents[1]).x * xSpacing + xOffset) - (findParentNodeByName(node.parents[0]).x * xSpacing + xOffset)) / 2" 
-						:x2="node.x * xSpacing + xOffset" 
-						:y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * branchDelta" 
-						:y2="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * branchDelta" 
-						style="stroke:rgb(255,0,0);stroke-width:2" 
-						:key="node.id"
-					/>
-					<line v-if="renderChildrenRelationship" class="parents-child"
-						:x1="node.x * xSpacing + xOffset" 
-						:x2="node.x * xSpacing + xOffset" 
-						:y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * branchDelta" 
-						:y2="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name) : 1) + siblingsLineDown" 
-						style="stroke:rgb(255,0,0);stroke-width:2" 
-						:key="node.id"
-					/>	
-					<line class="parent-indicator"
-						:x1="findParentNodeByName(node.parents[0]).x * xSpacing + xOffset" 
-						:x2="findParentNodeByName(node.parents[0]).x * xSpacing + xOffset" 
-						:y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset" 
-						:y2="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset - partnersLineUp" 
-						style="stroke:rgb(255,0,0);stroke-width:2" 
-						:key="node.id"
-					/>
-					<line class="parent-indicator"
-						:x1="findParentNodeByName(node.parents[1]).x * xSpacing + xOffset" 
-						:x2="findParentNodeByName(node.parents[1]).x * xSpacing + xOffset" 
-						:y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset" 
-						:y2="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset - partnersLineUp" 
-						style="stroke:rgb(255,0,0);stroke-width:2" 
-						:key="node.id"
-					/>
-				</template>
-				<template v-else-if="node.parents.filter(parent => parent != undefined).length == 1">
-					<line class="parent-single-vertical"
-						v-for="parentNode in node.parents" 
-						:x1="findParentNodeByName(parentNode).x * xSpacing + xOffset + xSpacing * 0.5"
-						:x2="findParentNodeByName(parentNode).x * xSpacing + xOffset + xSpacing * 0.5"
-						:y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * branchDelta"
-						:y2="findParentNodeByName(parentNode).y * ySpacing + yOffset"
-						style="stroke:rgb(255,0,0);stroke-width:2" 
-						:key="parentNode.id"
-					/>
-					<line class="parent-single-horizontal"
-						v-for="parentNode in node.parents" 
-						:x1="findParentNodeByName(parentNode).x * xSpacing + xOffset" 
-						:x2="findParentNodeByName(parentNode).x * xSpacing + xOffset + xSpacing * 0.5"
-						:y1="findParentNodeByName(parentNode).y * ySpacing + yOffset"
-						:y2="findParentNodeByName(parentNode).y * ySpacing + yOffset"
-						style="stroke:rgb(255,0,0);stroke-width:2" 
-						:key="parentNode.id"
-					/>
-					<line class="parent-single-child-horizontal"
-						v-for="parentNode in node.parents" 
-						:x1="node.x * xSpacing + xOffset" 
-						:x2="findParentNodeByName(parentNode).x * xSpacing + xOffset + xSpacing * 0.5"
-						:y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * branchDelta"
-						:y2="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * branchDelta"
-						style="stroke:rgb(255,0,0);stroke-width:2" 
-						:key="parentNode.id"
-					/>
-					<line class="single-parent-indicator"
-						v-for="parentNode in node.parents" 
-						:x1="findParentNodeByName(parentNode).x * xSpacing + xOffset" 
-						:x2="findParentNodeByName(parentNode).x * xSpacing + xOffset" 
-						:y1="findParentNodeByName(parentNode).y * ySpacing + yOffset" 
-						:y2="findParentNodeByName(parentNode).y * ySpacing + yOffset - partnersLineUp" 
-						style="stroke:rgb(255,0,0);stroke-width:2" 
-						:key="parentNode.id"
-					/>
-					<line class="single-parent-child-indicator"
-						v-for="parentNode in node.parents"
-						:x1="node.x * xSpacing + xOffset" 
-						:x2="node.x * xSpacing + xOffset"
-						:y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * branchDelta" 
-						:y2="node.y * ySpacing" 
-						style="stroke:rgb(255,0,0);stroke-width:2" 
-						:key="parentNode.id"
-					/>
-				</template>
-				<template v-if="node.siblings.filter(sibling => sibling != undefined).length > 0 && renderSiblingRelationship">
-					<line class="siblings"
-						:x1="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[node.siblings.length - 1])[0].x * xSpacing + xOffset" 
-						:x2="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[0])[0].x * xSpacing + xOffset" 
-						:y1="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name) : 1) * siblingsDelta" 
-						:y2="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name) : 1) * siblingsDelta" 
-						style="stroke:rgb(255,0,0);stroke-width:2" 
-						:key="node.id" 
-					/>
-					<line class="child-indicator"
-						:x1="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[0])[0].x * xSpacing + xOffset" 
-						:x2="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[0])[0].x * xSpacing + xOffset" 
-						:y1="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name):  1) * siblingsDelta" 
-						:y2="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name): 1) * siblingsDelta + siblingsLineDown" 
-						style="stroke:rgb(255,0,0);stroke-width:2" 
-						:key="node.id" 
-					/>
-					<line class="child-indicator"
-						:x1="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[node.siblings.length - 1])[0].x * xSpacing + xOffset" 
-						:x2="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[node.siblings.length - 1])[0].x * xSpacing + xOffset" 
-						:y1="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name) : 1) * siblingsDelta"
-						:y2="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name) : 1) * siblingsDelta + siblingsLineDown" 
-						style="stroke:rgb(255,0,0);stroke-width:2" 
-						:key="node.id" 
-					/>
-				</template>
-			</template>
-		</svg>
-		<br>
-		<v-container>
-			<v-select
-				:items="[{id: 0, name:'Biological'},{id: 1, name:'Family'}]"
-				label="visualization"
-				v-model="selected"
-				item-text="name"
-				item-value="id"
-			></v-select>
-        </v-container>
-	</div>
+	<v-container>
+		<v-card v-resize="onResize">
+			<v-card-title>
+				<h1>Tree</h1>
+			</v-card-title>
+			<v-card-text>
+				<br>
+				<svg v-if="selected === 0 && renderNodes.length > 0" id="svgelem" :height="250 * yMax" :width="300/2049 * windowSize * (xMax + 1)">
+					<template v-for="node in renderNodes">
+						<text :x="node.x * xSpacing + 20" :y="node.y * ySpacing + 30" fill="red" :key="node.id">{{ node.name }}</text>
+						<template v-if="node.parents.filter(parent => parent != undefined).length > 0">
+							<line
+								v-for="parentNode in node.parents" 
+								:x1="node.x * xSpacing + 100" 
+								:x2="renderNodes.filter(node => node.name === parentNode)[0].x * xSpacing + 100" 
+								:y1="node.y * ySpacing"
+								:y2="renderNodes.filter(node => node.name === parentNode)[0].y * ySpacing + 30" 
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="parentNode.id"
+							/>
+						</template>
+					</template>
+				</svg>
+				<svg v-if="selected === 1 && renderNodes.length > 0" id="svgelem" :height="250 * yMax" :width="300/2049 * windowSize * (xMax + 1)">
+					<template v-for="node in nodesWithSiblings">
+						<text :x="node.x * xSpacing + 20" :y="node.y * ySpacing + 20" fill="red" :key="node.id">{{ node.name }}</text>
+						<template v-if="node.parents.filter(parent => parent !== undefined).length == 2">
+							<line class="between-partners"
+								:x1="findParentNodeByName(node.parents[1]).x * xSpacing + xOffset" 
+								:x2="findParentNodeByName(node.parents[0]).x * xSpacing + xOffset" 
+								:y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset" 
+								:y2="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset" 
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="node.id"
+							/>
+							<line v-if="renderChildrenRelationship" class="parents-child"
+								:x1="(findParentNodeByName(node.parents[0]).x * xSpacing + xOffset) + ((findParentNodeByName(node.parents[1]).x * xSpacing + xOffset) - (findParentNodeByName(node.parents[0]).x * xSpacing + xOffset)) / 2" 
+								:x2="(findParentNodeByName(node.parents[0]).x * xSpacing + xOffset) + ((findParentNodeByName(node.parents[1]).x * xSpacing + xOffset) - (findParentNodeByName(node.parents[0]).x * xSpacing + xOffset)) / 2" 
+								:y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset" 
+								:y2="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * branchDelta" 
+								style="stroke:rgb(255,0,0);stroke-width:1" 
+								:key="node.id"
+							/>
+							<line v-if="renderChildrenRelationship" class="parents-child"
+								:x1="(findParentNodeByName(node.parents[0]).x * xSpacing + xOffset) + ((findParentNodeByName(node.parents[1]).x * xSpacing + xOffset) - (findParentNodeByName(node.parents[0]).x * xSpacing + xOffset)) / 2" 
+								:x2="node.x * xSpacing + xOffset" 
+								:y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * branchDelta" 
+								:y2="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * branchDelta" 
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="node.id"
+							/>
+							<line v-if="renderChildrenRelationship" class="parents-child"
+								:x1="node.x * xSpacing + xOffset" 
+								:x2="node.x * xSpacing + xOffset" 
+								:y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * branchDelta" 
+								:y2="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name) : 1) + siblingsLineDown" 
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="node.id"
+							/>	
+							<line class="parent-indicator"
+								:x1="findParentNodeByName(node.parents[0]).x * xSpacing + xOffset" 
+								:x2="findParentNodeByName(node.parents[0]).x * xSpacing + xOffset" 
+								:y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset" 
+								:y2="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset - partnersLineUp" 
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="node.id"
+							/>
+							<line class="parent-indicator"
+								:x1="findParentNodeByName(node.parents[1]).x * xSpacing + xOffset" 
+								:x2="findParentNodeByName(node.parents[1]).x * xSpacing + xOffset" 
+								:y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset" 
+								:y2="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset - partnersLineUp" 
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="node.id"
+							/>
+						</template>
+						<template v-else-if="node.parents.filter(parent => parent != undefined).length == 1">
+							<line class="parent-single-vertical"
+								v-for="parentNode in node.parents" 
+								:x1="findParentNodeByName(parentNode).x * xSpacing + xOffset + xSpacing * 0.5"
+								:x2="findParentNodeByName(parentNode).x * xSpacing + xOffset + xSpacing * 0.5"
+								:y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * branchDelta"
+								:y2="findParentNodeByName(parentNode).y * ySpacing + yOffset"
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="parentNode.id"
+							/>
+							<line class="parent-single-horizontal"
+								v-for="parentNode in node.parents" 
+								:x1="findParentNodeByName(parentNode).x * xSpacing + xOffset" 
+								:x2="findParentNodeByName(parentNode).x * xSpacing + xOffset + xSpacing * 0.5"
+								:y1="findParentNodeByName(parentNode).y * ySpacing + yOffset"
+								:y2="findParentNodeByName(parentNode).y * ySpacing + yOffset"
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="parentNode.id"
+							/>
+							<line class="parent-single-child-horizontal"
+								v-for="parentNode in node.parents" 
+								:x1="node.x * xSpacing + xOffset" 
+								:x2="findParentNodeByName(parentNode).x * xSpacing + xOffset + xSpacing * 0.5"
+								:y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * branchDelta"
+								:y2="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * branchDelta"
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="parentNode.id"
+							/>
+							<line class="single-parent-indicator"
+								v-for="parentNode in node.parents" 
+								:x1="findParentNodeByName(parentNode).x * xSpacing + xOffset" 
+								:x2="findParentNodeByName(parentNode).x * xSpacing + xOffset" 
+								:y1="findParentNodeByName(parentNode).y * ySpacing + yOffset" 
+								:y2="findParentNodeByName(parentNode).y * ySpacing + yOffset - partnersLineUp" 
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="parentNode.id"
+							/>
+							<line class="single-parent-child-indicator"
+								v-for="parentNode in node.parents"
+								:x1="node.x * xSpacing + xOffset" 
+								:x2="node.x * xSpacing + xOffset"
+								:y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * branchDelta" 
+								:y2="node.y * ySpacing" 
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="parentNode.id"
+							/>
+						</template>
+						<template v-if="node.siblings.filter(sibling => sibling != undefined).length > 0 && renderSiblingRelationship">
+							<line class="siblings"
+								:x1="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[node.siblings.length - 1])[0].x * xSpacing + xOffset" 
+								:x2="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[0])[0].x * xSpacing + xOffset" 
+								:y1="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name) : 1) * siblingsDelta" 
+								:y2="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name) : 1) * siblingsDelta" 
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="node.id" 
+							/>
+							<line class="child-indicator"
+								:x1="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[0])[0].x * xSpacing + xOffset" 
+								:x2="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[0])[0].x * xSpacing + xOffset" 
+								:y1="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name):  1) * siblingsDelta" 
+								:y2="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name): 1) * siblingsDelta + siblingsLineDown" 
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="node.id" 
+							/>
+							<line class="child-indicator"
+								:x1="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[node.siblings.length - 1])[0].x * xSpacing + xOffset" 
+								:x2="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[node.siblings.length - 1])[0].x * xSpacing + xOffset" 
+								:y1="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name) : 1) * siblingsDelta"
+								:y2="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name) : 1) * siblingsDelta + siblingsLineDown" 
+								style="stroke:rgb(255,0,0);stroke-width:2" 
+								:key="node.id" 
+							/>
+						</template>
+					</template>
+				</svg>
+				<br>
+				
+				<v-select
+					:items="[{id: 0, name:'Biological'},{id: 1, name:'Family'}]"
+					label="visualization"
+					v-model="selected"
+					item-text="name"
+					item-value="id"
+				></v-select>
+			</v-card-text>
+		</v-card>
+	</v-container>
 </template>
 
 <script>
@@ -171,9 +177,9 @@
 				renderedNodes: [],
 				id: 0,
 				renderNodes: [],
-				xSpacing: 300,
+				xSpacingBase: 300,
 				ySpacing: 200,
-				xOffset: 100,
+				xOffsetBase: 100,
 				yOffset: 30,
 				renderBiologicalTree: true,
 				renderFamilyTree: true,
@@ -191,7 +197,11 @@
 				xMax: 0,
 				yMax: 0,
 				selected: 1,
-				branchDelta: 7
+				branchDelta: 7,
+				windowSize: {
+					x: 0,
+					y: 0,
+				},
 			}
 		},
 		created() {
@@ -204,7 +214,8 @@
 				const levels = this.generateLevels(this.processedBranches)
 				this.xMax = Math.max(...Object.values(levels).map(level => level.length))
 				return this.calculateXPositions(levels)
-			})
+			}),
+			this.onResize();
 		},
 		methods: {
 			findParentNodeByName(parentName){
@@ -222,6 +233,9 @@
 					index += 1
 				}
 				return levels
+			},
+			onResize() {
+				this.windowSize = { x: window.innerWidth, y: window.innerHeight };
 			},
 			getRecursiveNames(tail, nodes, index){
 				if(tail === undefined){
@@ -335,12 +349,21 @@
 			},
 			reorderByChildren(childrenLayer, parentLayer) {
 				let parentsByChildrenTree = [...new Set(childrenLayer.flatMap(entry => entry).flatMap(child => child.parents).concat(parentLayer.flatMap(entry => entry).flatMap(parent => parent.siblings)))].map((parentName, index) => {
-					let parent = parentLayer.flatMap(entry => entry).filter(parent => parent.name === parentName)[0]
-					parent.x = index
+					let parent = parentLayer.flatMap(entry => entry).find(parent => parent.name === parentName)
+					if(parent !== undefined) {
+						parent.x = index
+						return parent
+					}
 					return parent
 				})
 				return parentsByChildrenTree.map(parent => {
-					if(parent.siblings.length > 0 && parent.siblings.map(siblingName => Math.abs(parentsByChildrenTree.filter(filterNode => filterNode.name === siblingName)[0].x - parent.x) === 1).includes(false)){
+					if(parent && parent.siblings.length > 0 && parent.siblings.map(siblingName => Math.abs(parentsByChildrenTree.filter(filterNode => {
+						if(filterNode !== undefined) {
+							return filterNode.name === siblingName	
+						}
+						return false
+						
+					})[0].x - parent.x) === 1).includes(false)){
 						// TODO: Swap when a swap with husband makes sense
 						//parent.x = Math.sign(parentsByChildrenTree.filter(filterNode => filterNode.name === parent.siblings[0])[0])
 					}
@@ -348,6 +371,14 @@
 				})
 			}
 			// TODO: Debug Position in Layout when duplicate, also debug homer on same level like bart
+		},
+		computed: {
+			xOffset() {
+				return this.windowSize.x * this.xOffsetBase * this.xMax /5 /1750
+			},
+			xSpacing() {
+				return this.windowSize.x * this.xSpacingBase * this.xMax /5 /1750
+			}
 		}
 	}
 </script>

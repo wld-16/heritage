@@ -4,7 +4,7 @@
       <v-form v-model="valid" lazy-validation ref="form">
         <h1>{{ head }}</h1>
           <v-text-field v-model="person.forname" :rules="nameRules" label="forname" :counter="10" required></v-text-field>
-          <v-text-field v-model="person.lastname" :rules="nameRules" label="lastname" :counter="10" required></v-text-field>
+          <v-text-field v-model="person.surname" :rules="nameRules" label="surname" :counter="10" required></v-text-field>
         <div>
           <v-checkbox
             v-model="person.isAlive"

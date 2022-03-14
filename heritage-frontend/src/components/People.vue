@@ -1,60 +1,109 @@
 <template>
-  <div>
-    <section>
-      <h1>Create a Person</h1>
-      <div>
-        <input v-model="forname" type="text" placeholder="max">
-        <input v-model="surname" type="text" placeholder="muster">
-      </div>
-      <div>
-        <input v-model="birthdate" type="date" placeholder="1999-11-11">
-        <label for="isAlive">isAlive:</label>
-        <input v-model="isAlive" id="isAlive" type="checkbox" value="true">
-      </div>
-      <div>
-        <label for="gender">gender:</label>
-        <span id="gender">
-          <input v-model="gender" type="radio" value="male" id="gender-male">
-          <label for="gender-male">Male</label>
-          <input v-model="gender" type="radio" value="female" id="gender-female">
-          <label for="gender-female">Female</label>
-          <input v-model="gender" type="radio" value="divergent" id="gender-divergent">
-          <label for="gender-divergent">Divergent</label>
-        </span>
-      </div>
-      <button @click="create" class="button" type="submit">Post</button>
-    </section>
-  </div>
+	<v-card>
+		<v-card-title>
+			<h1>People</h1>
+		</v-card-title>
+		<v-card-text>
+			<v-data-table 
+				:headers="headers"
+				:items="computedPeople"
+				:items-per-page="5"
+				class="elevation-1"
+			>
+				<template v-slot:item.actions="{ item }">
+					{{ item.id }}
+					<v-icon
+						class="mr-2"
+						@click="showEditFragment(item.id)"
+					>
+						mdi-pencil
+					</v-icon>
+					<v-icon
+						@click="deletePerson(item.id).then(() => updateView())"
+					>
+						mdi-delete
+					</v-icon>
+					<v-icon
+						class="mr-2"
+						@click="hardDeletePerson(item.id).then(() => updateView())"
+					>
+						mdi-delete-alert
+					</v-icon>
+				</template>
+			</v-data-table>
+		</v-card-text>
+		<create-or-update-person v-if="computedEditTable[editItemId] && computedEditTable[editItemId].showEdit" @created="updatePeople" :person="computedEditTable[editItemId].person"/>
+	</v-card>
 </template>
 
 <script>
 
-import repository from '../repository'
+import repository from '../repository.js'
+import CreateOrUpdatePerson from './CreateOrUpdatePerson'
 
 export default {
-  name: 'create-person',
-  mixins: [ repository ],
-  data(){
-    return {
-      forname: '',
-      surname: '',
-      birthdate: '1999-12-31',
-      isAlive: false,
-      gender: 'divergent'
-    }
-  },
-  methods: {
-    create(){
-      let data = { forname: this.forname, surname: this.surname, birthdate: this.birthdate, isAlive: this.isAlive, gender: this.gender }
-      this.createPerson(data).then(data => {
-        this.$emit('created', data.person);
-        this.forname = this.surname = this.gender = '';
-      }).catch(err => console.log(err.message));
-    }
-  }
+	name: 'People',
+	components: {
+		CreateOrUpdatePerson
+	},
+	mixins: [ repository ],
+	data () {
+		return {
+			headers: [
+				{ text: 'Id', value: 'id' },
+				{ text: 'Forname', value: 'forname' },
+				{ text: 'Surname', value: 'surname' },
+				{ text: 'IsAlive', value: 'isalive'},
+				{ text: 'Gender', value: 'gender'},
+				{ text: 'Actions', value: 'actions'}
+			],
+			people: [],
+			peopleEditTable: [],
+			editItemId: 0
+		}
+	},
+	methods: {
+		updateView() {
+			this.getPeople().then(data => {
+				this.people = data
+				this.initEditTable(this.people) 
+			}).catch((err => console.log(err)))
+		},
+		initEditTable(data){
+			data.forEach(person => {
+				this.peopleEditTable[person.id] = { showEdit: false || (this.peopleEditTable[person.id] && this.peopleEditTable[person.id].showEdit), person }
+			})
+		},
+		showEditFragment(id){
+			this.editItemId = id
+			this.peopleEditTable[id].showEdit = true
+			this.updateView()
+		},
+		updatePeople(updatedPerson) {
+			this.people = this.people.filter(person => person.id !== updatedPerson.id)
+			this.people = this.people.concat(updatedPerson)
+			this.peopleEditTable[updatedPerson.id].showEdit = false
+			this.updateView()
+		}
+	},
+	computed: {
+		computedPeople() {
+			return this.people.map(person => {
+				person.actions = 1
+				return person
+			})
+		},
+		computedEditTable() {
+			return this.peopleEditTable
+		}
+	},
+	mounted() {
+		this.getPeople().then(data => {
+			this.people = data
+			data.forEach(person => {
+				this.peopleEditTable[person.id] = { showEdit: false, person }
+			})
+		}).catch((err => console.log(err)))
+	}
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-</style>
