@@ -2,28 +2,28 @@
   <div>
     <section>
       <h1>{{ head }}</h1>
+       {{ relationships }}
       <div>
         <v-select
-          :items="allPeople"
+          :items="people"
           label="From"
+          item-text="forname"
+          return-object
           v-model="person_1"
-          item-text="fullname"
-          item-value="id"
         ></v-select>
         <v-select
-          :items="allPeople"
+          :items="people"
           v-model="person_2"
-          item-text="fullname"
-          item-value="id"
           label="To"
         ></v-select>
-        <v-select 
+        <v-autocomplete 
           v-model="relationship" 
-          :items="allRelationships" 
-          item-text="label" 
+          :items="relationships" 
+          item-text="label"
           item-value="id"
+          :loading="isLoading"
           label="Relationship">
-        </v-select>
+        </v-autocomplete>
       </div>
       <v-btn
        @click="create" 
@@ -47,7 +47,8 @@ export default {
       person_2: 0,
       relationship: 0,
       allPeople: [],
-      allRelationships : []
+      allRelationships : [],
+      isLoading: false
     }
   },
   props: {
@@ -66,11 +67,30 @@ export default {
     }
   },
   mounted() {
-    this.getPeople().then(data => this.allPeople = data.map(person => {
-      person.fullname = person.forname + ' ' + person.surname
-      return person
-    }))
-    this.getRelationshipTypes().then(data => this.allRelationships = data)
+        // Items have already been requested
+      if (this.isLoading) return
+
+      this.isLoading = true
+
+    this.getPeople().then(data => {
+      this.allPeople = data.map(person => {
+        person.fullname = person.forname + ' ' + person.surname
+        return person
+      })
+    })
+
+    this.getRelationshipTypes().then(data => {
+      this.allRelationships = data
+      this.isLoading = false
+    })
+  },
+  computed: {
+    people() {
+      return this.allPeople
+    },
+    relationships() {
+      return JSON.parse(JSON.stringify(this.allRelationships))
+    }
   }
 }
 </script>

@@ -8,7 +8,7 @@
 	import GraphNode from './GraphNode'
 
 	export default{
-		name: 'Branch',
+		name: 'TreeBranch',
 		components: {
 			GraphNode
 		},

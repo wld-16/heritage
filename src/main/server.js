@@ -1,4 +1,5 @@
 
+require('dotenv').config()
 const express = require('express')
 const { Client } = require('pg');
 const app = express()

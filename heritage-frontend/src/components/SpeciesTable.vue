@@ -4,20 +4,28 @@
 			<h1>Species</h1>
 		</v-card-title>
 		<v-card-text>
-			<v-data-table 
-				:headers="headers"
-				:items="computedSpecies"
-				:items-per-page="5"
-				class="elevation-1"
-			>
-				<template v-slot:item.actions="{ item }">
-					<v-icon
+			<v-table>
+			<thead>
+				<tr>
+					<th v-for="header in headers" :key="header.value">
+						{{ header.text }}
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr v-for="specie in species" :key="specie.id">
+					<td>{{ specie.id }}</td>
+					<td>{{ specie.label }}</td>
+					<td>
+						<v-icon
 						@click="deleteSpecies(item.id).then(() => updateView())">
 					>
 						mdi-delete
 					</v-icon>
-				</template>
-			</v-data-table>
+					</td>
+				</tr>
+			</tbody>
+			</v-table>
 		</v-card-text>
 	</v-card>
 </template>
@@ -27,7 +35,7 @@
 import repository from '../repository.js'
 
 export default {
-	name: 'Species',
+	name: 'SpeciesTable',
 	mixins: [ repository ],
 	data () {
 		return {

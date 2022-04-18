@@ -7,8 +7,8 @@
 			<v-card-text>
 				<br>
 				<svg v-if="selected === 0 && renderNodes.length > 0" id="svgelem" :height="250 * yMax" :width="300/2049 * windowSize * (xMax + 1)">
-					<template v-for="node in renderNodes">
-						<text :x="node.x * xSpacing + 20" :y="node.y * ySpacing + 30" fill="red" :key="node.id">{{ node.name }}</text>
+					<template v-for="node in renderNodes" :key="node.id">
+						<text :x="node.x * xSpacing + 20" :y="node.y * ySpacing + 30" fill="red">{{ node.name }}</text>
 						<template v-if="node.parents.filter(parent => parent != undefined).length > 0">
 							<line
 								v-for="parentNode in node.parents" 
@@ -23,8 +23,8 @@
 					</template>
 				</svg>
 				<svg v-if="selected === 1 && renderNodes.length > 0" id="svgelem" :height="250 * yMax" :width="300/2049 * windowSize * (xMax + 1)">
-					<template v-for="node in nodesWithSiblings">
-						<text :x="node.x * xSpacing + 20" :y="node.y * ySpacing + 20" fill="red" :key="node.id">{{ node.name }}</text>
+					<template v-for="node in nodesWithSiblings" :key="node.id">
+						<text :x="node.x * xSpacing + 20" :y="node.y * ySpacing + 20" fill="red">{{ node.name }}</text>
 						<template v-if="node.parents.filter(parent => parent !== undefined).length == 2">
 							<line class="between-partners"
 								:x1="findParentNodeByName(node.parents[1]).x * xSpacing + xOffset" 

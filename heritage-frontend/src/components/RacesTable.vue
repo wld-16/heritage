@@ -4,20 +4,28 @@
 			<h1>Races</h1>
 		</v-card-title>
 		<v-card-text>
-			<v-data-table 
-				:headers="headers"
-				:items="computedRaces"
-				:items-per-page="5"
-				class="elevation-1"
-			>
-				<template v-slot:item.actions="{ item }">
-					<v-icon
-						@click="deleteRace(item.id).then(() => updateView())">
+			<v-table>
+			<thead>
+				<tr>
+					<th v-for="header in headers" :key="header.value">
+						{{ header.text }}
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr v-for="race in races" :key="race.id">
+					<td>{{ race.id }}</td>
+					<td>{{ race.label }}</td>
+					<td>
+						<v-icon
+						@click="deleteRace(race.id).then(() => updateView())">
 					>
 						mdi-delete
 					</v-icon>
-				</template>
-			</v-data-table>
+					</td>
+				</tr>
+			</tbody>
+			</v-table>
 		</v-card-text>
 	</v-card>
 </template>
@@ -27,7 +35,7 @@
 import repository from '../repository.js'
 
 export default {
-	name: 'Races',
+	name: 'RacesTable',
 	mixins: [ repository ],
 	data () {
 		return {

@@ -1,23 +1,33 @@
 <template>
 	<v-card>
 		<v-card-title>
-			<h1>Relationship Types</h1>
+			<h1>Relationships</h1>
 		</v-card-title>
 		<v-card-text>
-			<v-data-table 
-				:headers="headers"
-				:items="tableRelationships"
-				:items-per-page="5"
-				class="elevation-1"
-			>
-				<template v-slot:item.actions="{ item }">
-					<v-icon
-						@click="deleteRelationship(item).then(() => updateView())"
+			<v-table>
+			<thead>
+				<tr>
+					<th v-for="header in headers" :key="header.value">
+						{{ header.text }}
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr v-for="relationship in relationships" :key="relationship.id">
+					<td>{{ relationship.id }}</td>
+					<td>{{ relationship.person_from_id }}</td>
+					<td>{{ relationship.person_to_id }}</td>
+					<td>{{ relationship.relationship_id }}</td>
+					<td>
+						<v-icon
+						@click="deleteRelationship(relationship.id).then(() => updateView())">
 					>
 						mdi-delete
 					</v-icon>
-				</template>
-			</v-data-table>
+					</td>
+				</tr>
+			</tbody>
+			</v-table>
 		</v-card-text>
 	</v-card>
 </template>
@@ -27,7 +37,7 @@
 import repository from '../repository.js'
 
 export default {
-	name: 'Relationships',
+	name: 'RelationshipsTable',
 	mixins: [ repository ],
 	data () {
 		return {
@@ -35,7 +45,7 @@ export default {
 				{ text: 'Id', value: 'id' },
 				{ text: 'From', value: 'person_from_id' },
 				{ text: 'To', value: 'person_to_id' },
-				{ text: 'Relationship', value: 'relationship_id'},
+				{ text: 'Relationship Type', value: 'relationship_id'},
 				{ text: 'Actions', value: 'actions'}
 			],
 			relationships: []

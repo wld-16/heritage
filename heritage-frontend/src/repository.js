@@ -1,5 +1,5 @@
 import axios from 'axios';
-const BASE_URL = process.env.VUE_APP_API_URL || "localhost:3000";
+const BASE_URL = process.env.VUE_APP_API_URL || "http://192.168.0.73:3000";
 
 export default {
 	methods: {
@@ -64,7 +64,7 @@ export default {
 
 		// RelationshipType
 		getRelationshipTypes: function() {
-			return axios.get(`${BASE_URL}/api/relationship-label/list`).then(response => response.data)
+			return axios.get(`${BASE_URL}/api/relationship-label/list`).then(response => response.data).catch(err => { console.log(err) })
 		},
 		createRelationshipType: function(data) {
 			return axios.post(`${BASE_URL}/api/relationship-label/create`, { 

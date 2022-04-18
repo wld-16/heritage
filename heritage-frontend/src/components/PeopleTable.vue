@@ -4,33 +4,43 @@
 			<h1>People</h1>
 		</v-card-title>
 		<v-card-text>
-			<v-data-table 
-				:headers="headers"
-				:items="computedPeople"
-				:items-per-page="5"
-				class="elevation-1"
-			>
-				<template v-slot:item.actions="{ item }">
-					{{ item.id }}
-					<v-icon
-						class="mr-2"
-						@click="showEditFragment(item.id)"
-					>
-						mdi-pencil
-					</v-icon>
-					<v-icon
-						@click="deletePerson(item.id).then(() => updateView())"
-					>
-						mdi-delete
-					</v-icon>
-					<v-icon
-						class="mr-2"
-						@click="hardDeletePerson(item.id).then(() => updateView())"
-					>
-						mdi-delete-alert
-					</v-icon>
-				</template>
-			</v-data-table>
+			<v-table>
+			<thead>
+				<tr>
+					<th v-for="header in headers" :key="header.value">
+						{{ header.text }}
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr v-for="person in people" :key="person.id">
+					<td>{{ person.id }}</td>
+					<td>{{ person.forname }}</td>
+					<td>{{ person.surname }}</td>
+					<td>{{ person.isalive }}</td>
+					<td>{{ person.gender }}</td>
+					<td>
+						<v-icon
+							class="mr-2"
+							@click="showEditFragment(item.id)"
+						>
+							mdi-pencil
+						</v-icon>
+						<v-icon
+							@click="deletePerson(item.id).then(() => updateView())"
+						>
+							mdi-delete
+						</v-icon>
+						<v-icon
+							class="mr-2"
+							@click="hardDeletePerson(item.id).then(() => updateView())"
+						>
+							mdi-delete-alert
+						</v-icon>
+					</td>
+				</tr>
+			</tbody>
+			</v-table>
 		</v-card-text>
 		<create-or-update-person v-if="computedEditTable[editItemId] && computedEditTable[editItemId].showEdit" @created="updatePeople" :person="computedEditTable[editItemId].person"/>
 	</v-card>
@@ -39,10 +49,10 @@
 <script>
 
 import repository from '../repository.js'
-import CreateOrUpdatePerson from './CreateOrUpdatePerson'
+import CreateOrUpdatePerson from './CreateOrUpdatePerson.vue'
 
 export default {
-	name: 'People',
+	name: 'PeopleTable',
 	components: {
 		CreateOrUpdatePerson
 	},
@@ -87,12 +97,6 @@ export default {
 		}
 	},
 	computed: {
-		computedPeople() {
-			return this.people.map(person => {
-				person.actions = 1
-				return person
-			})
-		},
 		computedEditTable() {
 			return this.peopleEditTable
 		}

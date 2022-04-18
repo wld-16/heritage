@@ -11,13 +11,14 @@ const personService = new PersonService()
 const animalService = new AnimalService()
 
 router.get('/api/person/list', (req, res) => {
+	log("Fetch People")
 	personService.getAllPeople()
-		.then(data => { console.log(data.rows.map(entry => new Date(entry.birthdate))) ; res.send(data.rows) })
+		.then(data => { res.send(data.rows) })
 		.catch(err => { console.log("OnListPerson: " + err)} )
 })
 
 router.post('/api/person/create', (req, res) => {
-	console.log(req.body)
+	log("Create Person")
 	var values = [req.body.forname, req.body.surname, req.body.birthdate, req.body.isAlive, req.body.gender]
 	if(req.body.id === 0){
 		personService.createPerson(values)
@@ -31,24 +32,28 @@ router.post('/api/person/create', (req, res) => {
 })
 
 router.post('/api/person/delete', (req, res) => {
+	log("Delete Person with ID=" + req.body.id)
 	personService.deletePerson(req.body.id)
 		.then(data => res.send(true))
 		.catch(err => { console.log("OnDeletePerson: " + err)} )
 })
 
 router.post('/api/person/hard-delete', (req, res) => {
+	log("Hard Delete Person with ID=" + req.body.id)
 	personService.hardDeletePerson(req.body.id)
 		.then(data => res.send(true))
 		.catch(err => { console.log("OnDeletePerson: " + err)} )
 })
 
 router.get('/api/animal/list', (req, res) => {
+	log("Fetch Animals")
 	animalService.getAllAnimals()
 		.then(data => res.send(data.rows))
 		.catch(err => { console.log("OnListAnimal: " + err)} )
 })
 
 router.post('/api/animal/create', (req, res) => {
+	log("Create Animal")
 	var values = [req.body.name, req.body.isAlive, req.body.sex, req.body.species_id, req.body.race_id]
 	animalService.createAnimal(values)
 		.then(data => res.send(true))
@@ -56,18 +61,21 @@ router.post('/api/animal/create', (req, res) => {
 })
 
 router.post('/api/animal/delete', (req, res) => {
+	log("Delete Animal with ID=" + req.body.id)
 	animalService.deleteAnimal(req.body.id)
 		.then(data => res.send(true))
 		.catch(err => { console.log("OnDeleteAnimal: " + err)} )
 })
 
 router.get('/api/species/list', (req, res) => {
+	log("List all species")
 	animalService.getAllSpecies()
 		.then(data => res.send(data.rows))
 		.catch(err => { console.log("OnListSpecies: " + err) } )
 })
 
 router.post('/api/species/create', (req, res) => {
+	log("Create all species")
 	var values = [req.body.label]
 	animalService.createSpecies(values)
 		.then(data => res.send(true))
@@ -75,18 +83,21 @@ router.post('/api/species/create', (req, res) => {
 })
 
 router.post('/api/species/delete', (req, res) => {
+	log("Delete species with ID=" + req.body.id)
 	animalService.deleteSpecies(req.body.id)
 		.then(data => res.send(true))
 		.catch(err => { console.log("OnDeleteSpecies: " + err)})
 })
 
 router.get('/api/race/list', (req, res) => {
+	log("Get all Races")
 	animalService.getAllRaces()
 		.then(data => res.send(data.rows))
 		.catch(err => { console.log("OnListRace: " + err)})
 })
 
 router.post('/api/race/create', (req, res) => {
+	log("Create Race")
 	var values = [req.body.label]
 	animalService.createRace(values)
 		.then(data => res.send(true))
@@ -94,18 +105,21 @@ router.post('/api/race/create', (req, res) => {
 })
 
 router.post('/api/race/delete', (req, res) => {
+	log("Delete Race with ID=" + req.body.id)
 	animalService.deleteRace(req.body.id)
 		.then(data => res.send(true))
 		.catch(err => { console.log("OnDeleteRace: " + err)} )
 })
 
 router.get('/api/relationship-label/list', (req, res) => {
+	log("List all relationship labels")
 	personService.getAllRelationshipTypes()
 		.then(data => res.send(data.rows))
 		.catch(err => { console.log("OnListRelationshipLabel: " + err)} )
 })
 
 router.post('/api/relationship-label/create', (req, res) => {
+	log("Create relationship label")
 	let mainId = 0
 	let oppositeId = 0
 	personService.createMainRelationshipType(req.body.label)
@@ -120,26 +134,27 @@ router.post('/api/relationship-label/create', (req, res) => {
 })
 
 router.post('/api/relationship-label/delete', (req, res) => {
-	console.log("deleting: " + req.body)
+	log("Delete relationship type")
 	personService.deleteRelationshipType(req.body)
 		.then(data => res.send(true))
 		.catch(err => { console.log("OnDeleteRace: " + err)} )
 })
 
 router.get('/api/relationship/list', (req, res) => {
+	log("List all relationship")
 	personService.getAllRelationships()
 		.then(data => res.send(data.rows))
 		.catch(err => { console.log("OnListRelationship: " + err)})
 })
 
 router.post('/api/relationship/delete', (req, res) => {
-	console.log(req.body)
 	personService.deleteRelationship(req.body.relationship_id, req.body.person_from_id, req.body.person_to_id)
 	.then(data => res.send(true))
 	.catch(err => { console.log("OnDeleteRelationship: " + err)} )
 })
 
 router.post('/api/relationship/create', (req, res) => {
+	log("Create relationship")
 	let requestBody = req.body
 	personService.createRelationship(requestBody.person_1_id, requestBody.person_2_id, requestBody.relationship_label_id)
 		.then(data => {
@@ -155,6 +170,7 @@ router.post('/api/relationship/create', (req, res) => {
 })
 
 router.get('/api/family-tree/maxHeight', (req, res) => {
+	log("Get max height")
 	familyTreeService.countMaxDepth().then(promises => {
 		Promise.all(promises).then(values => {
 			res.send({branches: values.map(d => d.done).flat().map(node => {
@@ -168,5 +184,9 @@ router.get('/api/family-tree/maxHeight', (req, res) => {
 router.get('/', (req, res) => {
   	res.send('Hello World!');
 })
+
+function log(content) {
+		console.log("[" + new Date().toLocaleString() + "] - " + content)
+}
 
 module.exports = router;
