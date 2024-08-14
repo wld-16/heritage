@@ -47,6 +47,7 @@ export default {
     return {
       type: 'relationship',
       label: '',
+      valid: true,
       opposite_label: '',
       labelRules: [
         v => !!v || 'Label is required',

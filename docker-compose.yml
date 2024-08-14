@@ -24,7 +24,7 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
     image: postgres
     ports: 
-      - "35432:${POSTGRES_PORT}"
+      - 35432:5432
     volumes:
       - ./src/res/db/postgres:/docker-entrypoint-initdb.d
       - ./src/res/seed/:/seed/

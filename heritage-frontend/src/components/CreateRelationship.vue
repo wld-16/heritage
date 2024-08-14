@@ -3,23 +3,26 @@
     <section>
       <h1>{{ head }}</h1>
        {{ relationships }}
+      {{ people }}
       <div>
         <v-select
           :items="people"
           label="From"
-          item-text="forname"
-          return-object
+          item-title="forname"
+          item-value="id"
           v-model="person_1"
         ></v-select>
         <v-select
           :items="people"
+          item-title="forname"
+          item-value="id"
           v-model="person_2"
           label="To"
         ></v-select>
         <v-autocomplete 
           v-model="relationship" 
-          :items="relationships" 
-          item-text="label"
+          :items="relationships"
+          item-title="label"
           item-value="id"
           :loading="isLoading"
           label="Relationship">

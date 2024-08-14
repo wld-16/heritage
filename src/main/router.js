@@ -135,7 +135,7 @@ router.post('/api/relationship-label/create', (req, res) => {
 
 router.post('/api/relationship-label/delete', (req, res) => {
 	log("Delete relationship type")
-	personService.deleteRelationshipType(req.body)
+	personService.deleteRelationshipType(req.body.id)
 		.then(data => res.send(true))
 		.catch(err => { console.log("OnDeleteRace: " + err)} )
 })
@@ -148,7 +148,10 @@ router.get('/api/relationship/list', (req, res) => {
 })
 
 router.post('/api/relationship/delete', (req, res) => {
-	personService.deleteRelationship(req.body.relationship_id, req.body.person_from_id, req.body.person_to_id)
+	const relationshipId = req.body.id.replace(")","").replace("(","").split(',')[0]
+	const person_from_id = req.body.id.replace(")","").replace("(","").split(',')[1]
+	const person_to_id = req.body.id.replace(")","").replace("(","").split(',')[2]
+	personService.deleteRelationship(relationshipId, person_from_id, person_to_id)
 	.then(data => res.send(true))
 	.catch(err => { console.log("OnDeleteRelationship: " + err)} )
 })

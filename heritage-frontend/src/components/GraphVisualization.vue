@@ -9,7 +9,7 @@
 				<svg v-if="selected === 0 && renderNodes.length > 0" id="svgelem" :height="250 * yMax" :width="300/2049 * windowSize * (xMax + 1)">
 					<template v-for="node in renderNodes" :key="node.id">
 						<text :x="node.x * xSpacing + 20" :y="node.y * ySpacing + 30" fill="red">{{ node.name }}</text>
-						<template v-if="node.parents.filter(parent => parent != undefined).length > 0">
+						<template v-if="node.parents.filter(parent => parent !== undefined).length > 0">
 							<line
 								v-for="parentNode in node.parents" 
 								:x1="node.x * xSpacing + 100" 
@@ -75,7 +75,7 @@
 								:key="node.id"
 							/>
 						</template>
-						<template v-else-if="node.parents.filter(parent => parent != undefined).length == 1">
+						<template v-else-if="node.parents.filter(parent => parent !== undefined).length === 1">
 							<line class="parent-single-vertical"
 								v-for="parentNode in node.parents" 
 								:x1="findParentNodeByName(parentNode).x * xSpacing + xOffset + xSpacing * 0.5"
@@ -122,7 +122,7 @@
 								:key="parentNode.id"
 							/>
 						</template>
-						<template v-if="node.siblings.filter(sibling => sibling != undefined).length > 0 && renderSiblingRelationship">
+						<template v-if="node.siblings.filter(sibling => sibling !== undefined).length > 0 && renderSiblingRelationship">
 							<line class="siblings"
 								:x1="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[node.siblings.length - 1])[0].x * xSpacing + xOffset" 
 								:x2="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[0])[0].x * xSpacing + xOffset" 
@@ -156,7 +156,7 @@
 					:items="[{id: 0, name:'Biological'},{id: 1, name:'Family'}]"
 					label="visualization"
 					v-model="selected"
-					item-text="name"
+					item-title="name"
 					item-value="id"
 				></v-select>
 			</v-card-text>
@@ -205,7 +205,8 @@
 			}
 		},
 		created() {
-			this.getBranches().then(data => {
+      this.getBranches().then(data => {
+        console.log(data)
 				let branchesWithPath = this.branchesWithPath(data.branches.sort((b1, b2) => b2.l - b1.l))
 				let branchesWithYPosition = this.branchesWithYPosition(branchesWithPath)
 				this.branches = branchesWithYPosition

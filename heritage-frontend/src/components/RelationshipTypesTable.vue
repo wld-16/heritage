@@ -19,7 +19,7 @@
 					<td>{{ type.opposite_id }}</td>
 					<td>
 						<v-icon
-						@click="deleteRelationshipType(type.id).then(() => updateView())">
+						@click="deleteRelationshipType({id: type.id}).then(() => updateView())">
 					>
 						mdi-delete
 					</v-icon>

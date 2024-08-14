@@ -1,7 +1,7 @@
 const pg = require('pg')
 const { Pool, Client } = require('pg')
 const url = require('url')
-const dbConnectionString = process.env.DATABASE_URL || "postgres://sensei:herit12S@localhost:35432/heritage"
+const dbConnectionString = process.env.DATABASE_URL || "postgres://postgres:safe223344xx@localhost:35432/heritage"
 const willLogSQL = process.env.LOG_SQL || false 
 
 const params = url.parse(dbConnectionString)

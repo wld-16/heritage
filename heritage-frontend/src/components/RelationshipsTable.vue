@@ -20,7 +20,7 @@
 					<td>{{ relationship.relationship_id }}</td>
 					<td>
 						<v-icon
-						@click="deleteRelationship(relationship.id).then(() => updateView())">
+						@click="deleteRelationship({id: relationship.id, person_from_id, person_to_id }).then(() => updateView())">
 					>
 						mdi-delete
 					</v-icon>

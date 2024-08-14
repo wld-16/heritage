@@ -1,5 +1,5 @@
 import axios from 'axios';
-const BASE_URL = process.env.VUE_APP_API_URL || "http://192.168.0.73:3000";
+const BASE_URL = process.env.VUE_APP_API_URL || "http://localhost:3000";
 
 export default {
 	methods: {
