@@ -10,32 +10,12 @@
 				v-model="person.isAlive"
 				label="isAlive"
 			></v-checkbox>
-			<v-menu
-				ref="menu"
-				v-model="menu"
-				:close-on-content-click="false"
-				transition="scale-transition"
-				offset-y
-				min-width="auto"
-			>
-			<template v-slot:activator="{ on, attrs }">
-				<v-text-field
-					v-model="person.birthdate"
-					label="Birthday date"
-					prepend-icon="mdi-calendar"
-					readonly
-					v-bind="attrs"
-					v-on="on"
-				></v-text-field>
-			</template>
-			<v-date-picker
-				v-model="person.birthdate"
-				v-model:active-picker="activePicker"
-				:max="(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10)"
-				min="1950-01-01"
-			></v-date-picker>
-			</v-menu>
- 
+      <v-text-field
+          type="date"
+          label="Birthday date"
+          v-model="person.birthdate"
+      ></v-text-field>
+
 			<v-radio-group v-model="person.gender">
 			<v-radio
 				:label="'Female'"

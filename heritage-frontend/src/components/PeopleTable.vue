@@ -22,18 +22,18 @@
 					<td>
 						<v-icon
 							class="mr-2"
-							@click="showEditFragment(item.id)"
+							@click="showEditFragment(person.id)"
 						>
 							mdi-pencil
 						</v-icon>
 						<v-icon
-							@click="deletePerson(item.id).then(() => updateView())"
+							@click="deletePerson(person.id).then(() => updateView())"
 						>
 							mdi-delete
 						</v-icon>
 						<v-icon
 							class="mr-2"
-							@click="hardDeletePerson(item.id).then(() => updateView())"
+							@click="hardDeletePerson(person.id).then(() => updateView())"
 						>
 							mdi-delete-alert
 						</v-icon>

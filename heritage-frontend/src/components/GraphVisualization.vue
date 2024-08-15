@@ -1,10 +1,8 @@
 <template>
 	<v-container>
-		<v-card v-resize="onResize">
 			<v-card-title>
 				<h1>Tree</h1>
 			</v-card-title>
-			<v-card-text>
 				<br>
 				<svg v-if="selected === 0 && renderNodes.length > 0" id="svgelem" :height="250 * yMax" :width="300/2049 * windowSize * (xMax + 1)">
 					<template v-for="node in renderNodes" :key="node.id">
@@ -25,7 +23,7 @@
 				<svg v-if="selected === 1 && renderNodes.length > 0" id="svgelem" :height="250 * yMax" :width="300/2049 * windowSize * (xMax + 1)">
 					<template v-for="node in nodesWithSiblings" :key="node.id">
 						<text :x="node.x * xSpacing + 20" :y="node.y * ySpacing + 20" fill="red">{{ node.name }}</text>
-						<template v-if="node.parents.filter(parent => parent !== undefined).length == 2">
+						<template v-if="node.parents.filter(parent => parent !== undefined).length === 2">
 							<line class="between-partners"
 								:x1="findParentNodeByName(node.parents[1]).x * xSpacing + xOffset" 
 								:x2="findParentNodeByName(node.parents[0]).x * xSpacing + xOffset" 
@@ -126,15 +124,15 @@
 							<line class="siblings"
 								:x1="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[node.siblings.length - 1])[0].x * xSpacing + xOffset" 
 								:x2="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[0])[0].x * xSpacing + xOffset" 
-								:y1="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name) : 1) * siblingsDelta" 
-								:y2="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name) : 1) * siblingsDelta" 
+								:y1="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name) : 1) * siblingsDelta"
+								:y2="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name) : 1) * siblingsDelta"
 								style="stroke:rgb(255,0,0);stroke-width:2" 
 								:key="node.id" 
 							/>
 							<line class="child-indicator"
 								:x1="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[0])[0].x * xSpacing + xOffset" 
 								:x2="nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[0])[0].x * xSpacing + xOffset" 
-								:y1="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name):  1) * siblingsDelta" 
+								:y1="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name): 1) * siblingsDelta"
 								:y2="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name): 1) * siblingsDelta + siblingsLineDown" 
 								style="stroke:rgb(255,0,0);stroke-width:2" 
 								:key="node.id" 
@@ -159,8 +157,6 @@
 					item-title="name"
 					item-value="id"
 				></v-select>
-			</v-card-text>
-		</v-card>
 	</v-container>
 </template>
 
@@ -187,17 +183,17 @@
 				groupedFamilyNodes: [],
 				nodeWithChildren: [],
 				topToBottomTree: [],
-				siblingsDelta: 15,
+				siblingsDelta: 40,
 				siblingsLineDown: 5,
 				partnersDelta: 15,
 				partnersLineUp: 5,
-				parentChildConnectorDelta: 140,
+				parentChildConnectorDelta: 120,
 				renderChildrenRelationship: true,
 				renderSiblingRelationship: false,
 				xMax: 0,
 				yMax: 0,
 				selected: 1,
-				branchDelta: 7,
+				branchDelta: 5,
 				windowSize: {
 					x: 0,
 					y: 0,

@@ -2,8 +2,6 @@
   <div>
     <section>
       <h1>{{ head }}</h1>
-       {{ relationships }}
-      {{ people }}
       <div>
         <v-select
           :items="people"
