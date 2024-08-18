@@ -1,9 +1,11 @@
 <template>
-    <v-col cols="2"></v-col>
+  <v-row>
+    <v-col cols="2" />
     <v-col>
-      <GraphVisualization></GraphVisualization>
+      <GraphVisualization />
     </v-col>
-    <v-col cols="2"></v-col>
+    <v-col cols="2" />
+  </v-row>
 </template>
 <script>
 import GraphVisualization from './visualization/GraphVisualization.vue'

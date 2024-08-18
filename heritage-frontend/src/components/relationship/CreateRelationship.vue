@@ -62,8 +62,7 @@ export default {
     create(){
       let data = { person_1_id: this.person_1, person_2_id: this.person_2, relationship_id: this.relationship }
       this.createRelationship(data).then(() => {
-        this.$emit('created');
-        this.$emit("create")
+        this.$emit("create", data)
         this.forname = this.surname = this.gender = '';
       }).catch(err => console.log(err.message));
     }

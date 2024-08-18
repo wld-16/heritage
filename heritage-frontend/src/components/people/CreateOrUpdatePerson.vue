@@ -97,12 +97,11 @@ export default {
 			let data = { id: this.person.id, forname: this.person.forname, surname: this.person.surname, birthdate: this.person.birthdate, isAlive: this.person.isAlive, gender: this.person.gender }
 			this.createPerson(data).then(response => {
 				this.forname = this.surname = this.gender = '';
-				this.$emit('created', response.rows[0])
+				this.$emit('create', response.rows[0])
 			}).catch(err => console.log(err.message));
 		},
 		validate () {
 			if(this.$refs.form.validate()) {
-        this.$emit("create")
 				this.create()   
 			}
 		}

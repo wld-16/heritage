@@ -4,7 +4,7 @@ import {toRefs} from "vue";
 
 const props = defineProps({
   snackbar: Boolean,
-  snackbarText: String
+  snackbarText: { type: String, default: "" }
 })
 
 let { snackbar, snackbarText } = toRefs(props);
@@ -12,12 +12,12 @@ let { snackbar, snackbarText } = toRefs(props);
 
 <template>
   <v-snackbar
-      v-model="snackbar"
+    v-model="snackbar"
   >
     {{ snackbarText }}
 
-    <template v-slot:actions>
-      <slot></slot>
+    <template #actions>
+      <slot />
     </template>
   </v-snackbar>
 </template>

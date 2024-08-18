@@ -1,53 +1,56 @@
 <template>
-		<v-row>
-			<v-col cols="2"></v-col>
-			<v-col>
-				<v-expansion-panels>
-					<v-expansion-panel>
-					<v-expansion-panel-title>
-						Create Person
-					</v-expansion-panel-title>
-					<v-expansion-panel-text>
-						<CreateOrUpdatePerson @create="showSnackbar('Created Person')"></CreateOrUpdatePerson>
-					</v-expansion-panel-text>
-				</v-expansion-panel>
-				<v-expansion-panel>
-					<v-expansion-panel-title>
-						Create Relationship
-					</v-expansion-panel-title>
-					<v-expansion-panel-text>
-						<CreateRelationship @create="showSnackbar('Created Relationship')"></CreateRelationship>
-					</v-expansion-panel-text>
-				</v-expansion-panel>
-				<v-expansion-panel>
-					<v-expansion-panel-title>
-						Create Animal
-					</v-expansion-panel-title>
-					<v-expansion-panel-text>
-						<CreateAnimal @create="showSnackbar('Created Animal')"></CreateAnimal>
-					</v-expansion-panel-text>
-				</v-expansion-panel>
-				<v-expansion-panel>
-					<v-expansion-panel-title>
-						Create Label
-					</v-expansion-panel-title>
-					<v-expansion-panel-text>
-						<CreateLabel @create="showSnackbar('Created Label')"></CreateLabel>
-					</v-expansion-panel-text>
-				</v-expansion-panel>
-				</v-expansion-panels>
-        <custom-snackbar :snackbar="snackbarVisible" :text="snackbarText">
-          <v-btn
-              color="pink"
-              variant="text"
-              @click="snackbarVisible = false"
-          >
-            Close
-          </v-btn>
-        </custom-snackbar>
-			</v-col>
-			<v-col cols="2"></v-col>
-		</v-row>
+  <v-row>
+    <v-col cols="2" />
+    <v-col>
+      <v-expansion-panels>
+        <v-expansion-panel>
+          <v-expansion-panel-title>
+            Create Person
+          </v-expansion-panel-title>
+          <v-expansion-panel-text>
+            <CreateOrUpdatePerson @create="showSnackbar('Created Person')" />
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+        <v-expansion-panel>
+          <v-expansion-panel-title>
+            Create Relationship
+          </v-expansion-panel-title>
+          <v-expansion-panel-text>
+            <CreateRelationship @create="showSnackbar('Created Relationship')" />
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+        <v-expansion-panel>
+          <v-expansion-panel-title>
+            Create Animal
+          </v-expansion-panel-title>
+          <v-expansion-panel-text>
+            <CreateAnimal @create="showSnackbar('Created Animal')" />
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+        <v-expansion-panel>
+          <v-expansion-panel-title>
+            Create Label
+          </v-expansion-panel-title>
+          <v-expansion-panel-text>
+            <CreateLabel @create="showSnackbar('Created Label')" />
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+      </v-expansion-panels>
+      <custom-snackbar
+        :snackbar="snackbarVisible"
+        :text="snackbarText"
+      >
+        <v-btn
+          color="pink"
+          variant="text"
+          @click="snackbarVisible = false"
+        >
+          Close
+        </v-btn>
+      </custom-snackbar>
+    </v-col>
+    <v-col cols="2" />
+  </v-row>
 </template>
 
 <script>
@@ -78,7 +81,7 @@ export default {
       this.snackbarText = newSnackbarText
       setTimeout(() => {
         this.snackbarVisible = false
-      }, "2000");
+      }, 2000);
     }
   }
 }
