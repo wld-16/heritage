@@ -1,15 +1,13 @@
 const pg = require('pg')
 const { Pool, Client } = require('pg')
-const url = require('url')
-const dbConnectionString = process.env.DATABASE_URL || "postgres://postgres:safe223344xx@localhost:35432/heritage"
+const dbConnectionString = process.env.DATABASE_URL
 const willLogSQL = process.env.LOG_SQL || false 
 
-const params = url.parse(dbConnectionString)
-const auth = params.auth.split(':')
+const params = new URL(dbConnectionString)
 
 const config = {
-  user: auth[0],
-  password: auth[1],
+  user: params.username,
+  password: params.password,
   host: params.hostname,
   port: params.port,
   database: params.pathname.split('/')[1],

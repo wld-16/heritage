@@ -23,13 +23,13 @@ class TreeStructure {
   		});
 	}
 
-	recursiveFunction(person, countsArray, backtrack, parentsFunction, relationshipName) {
+	recursiveFunction(person, countsArray, backtrack, relationshipFunction, relationshipName) {
 		countsArray.currentElement.l = countsArray.currentElement.l + 1
 		countsArray.currentElement.path = countsArray.currentElement.path + '{"forname":"' + person.forname + '","surname":"'+ person.surname + '","bday":"' + person.birthdate + '","' + relationshipName + '":'
 
-		return parentsFunction(person).then(parents => {
-			if(parents.length == 0) {
-				if(backtrack.length == 0) {
+		return relationshipFunction(person).then(relatedPeople => {
+			if(relatedPeople.length === 0) {
+				if(backtrack.length === 0) {
 					// Finish
 					countsArray.done.push(countsArray.currentElement)
 					countsArray.currentElement = {}
@@ -40,20 +40,21 @@ class TreeStructure {
 					let nxt = backtrack.shift()
 					countsArray.currentElement.l = nxt.el.l
 					countsArray.currentElement.path = nxt.el.path
-					return this.recursiveFunction(nxt.person, countsArray, backtrack, parentsFunction, relationshipName)
+					return this.recursiveFunction(nxt.person, countsArray, backtrack, relationshipFunction, relationshipName)
 				}
 			} else { 
-				// Process next parents
-				let nextPerson = parents.shift()
+				// Process next relatedPeople
+				let nextPerson = relatedPeople.shift()
 
-				parents.forEach(parent => {
+				relatedPeople.forEach(parent => {
 					backtrack.push({el: {l: countsArray.currentElement.l, path: countsArray.currentElement.path}, person: parent})
 				})
-				return this.recursiveFunction(nextPerson, countsArray, backtrack, parentsFunction, relationshipName)
+				return this.recursiveFunction(nextPerson, countsArray, backtrack, relationshipFunction, relationshipName)
 			}
 		})
 	}
 
+	// Search the people, that are included in a person_relationship as parent with the restriction, that they are not included in a person_relationship as child
 	getPeopleWithNoParentsRecorded(){
 		return client.query("select * from person inner join (select ppr.person_from_id from person_person_relationship ppr inner join relationship r on ppr.relationship_id = r.id where r.label = 'parent' except select ppr.person_from_id from person_person_relationship ppr inner join relationship r on ppr.relationship_id = r.id where r.label = 'child') as ppr on ppr.person_from_id = person.id", [])
 	}

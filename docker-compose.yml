@@ -7,7 +7,6 @@ services:
     environment: 
        DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}
        NODE_ENV: development
-       DELAYED_INIT: "TRUE"
        PORT: 3000
     ports:
     - 3000:3000
