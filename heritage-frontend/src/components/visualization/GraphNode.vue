@@ -1,8 +1,8 @@
 <template>
 	<td>
-		<span v-if="nodeData != undefined" >
+		<span v-if="nodeData !== undefined" >
 			{{ nodeData.forname }} {{ nodeData.surname }} ({{ nodeData.bday }}) 
-			<span v-if="nodeData.child != undefined">
+			<span v-if="nodeData.child !== undefined">
 				<graph-link></graph-link>
 				<graph-node :nodeData="nodeData.child"></graph-node>
 			</span>
@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import GraphLink from './GraphLink'
+import GraphLink from './GraphLink.vue'
 
 	export default {
 		name: "graph-node",

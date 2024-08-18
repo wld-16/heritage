@@ -46,7 +46,7 @@
 
 <script>
 
-import repository from '../repository'
+import repository from '../../repository'
 
 export default {
 	name: 'create-or-update-person',
@@ -102,6 +102,7 @@ export default {
 		},
 		validate () {
 			if(this.$refs.form.validate()) {
+        this.$emit("create")
 				this.create()   
 			}
 		}

@@ -38,7 +38,7 @@
 
 <script>
 
-import repository from '../repository'
+import repository from '../../repository'
 
 export default {
   name: 'create-label',
@@ -73,9 +73,9 @@ export default {
   },
   methods: {
     validate() {
-      console.log(this.$refs.form.validate())
       if(this.$refs.form.validate()) {
-        this.create()   
+        this.create()
+        this.$emit("create")
       }
     },
     create(){

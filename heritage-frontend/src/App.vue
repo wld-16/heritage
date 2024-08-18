@@ -24,10 +24,10 @@
 					density="compact"
 				>
 					<v-list-item prepend-icon="mdi-view-dashboard" value="home" name="Dashboard" @click="moveTo('home')">Dashboard</v-list-item>
-					<v-list-item prepend-icon="mdi-view-dashboard" value="trees" name="Trees" @click="moveTo('trees')">Trees</v-list-item>
-					<v-list-item prepend-icon="mdi-view-dashboard" value="data" name="Data" @click="moveTo('data')">Data</v-list-item>
-					<v-list-item prepend-icon="mdi-view-dashboard" value="forms" name="Forms" @click="moveTo('forms')">Forms</v-list-item>
-					<v-list-item prepend-icon="mdi-view-dashboard" value="branches" name="Branches" @click="moveTo('branches')">Branches</v-list-item>
+					<v-list-item prepend-icon="mdi-family-tree" value="trees" name="Trees" @click="moveTo('trees')">Trees</v-list-item>
+					<v-list-item prepend-icon="mdi-table" value="data" name="Data" @click="moveTo('data')">Data</v-list-item>
+					<v-list-item prepend-icon="mdi-table-row-plus-after" value="forms" name="Forms" @click="moveTo('forms')">Forms</v-list-item>
+					<v-list-item prepend-icon="mdi-source-branch" value="branches" name="Branches" @click="moveTo('branches')">Branches</v-list-item>
 					<v-list-item prepend-icon="mdi-forum" value="about" name="About" @click="moveTo('about')">About</v-list-item>
 				</v-list>
 			</v-navigation-drawer>
@@ -39,20 +39,14 @@
 </template>
 
 <script>
-import HomePage from './components/HomePage.vue'
 
 export default {
 	name: 'App',
-	components: {
-		HomePage
-	},
 	data: () => ({
 		showNavigation: true
 	}),
 	methods: {
 		moveTo(routeName) {
-			console.log(routeName)
-			console.log(this.$router)
 			this.$router.push({ name: routeName})
 		},
 		toggleNavigation() {

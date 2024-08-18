@@ -1,18 +1,24 @@
 <template>
-	<PeopleTable></PeopleTable>
-	<RelationshipsTable></RelationshipsTable>
-	<RelationshipTypesTable></RelationshipTypesTable>
-	<AnimalsTable></AnimalsTable>
-	<SpeciesTable></SpeciesTable>
-	<RacesTable></RacesTable>
+  <v-row>
+    <v-col cols="2"></v-col>
+    <v-col>
+      <PeopleTable></PeopleTable>
+      <RelationshipsTable></RelationshipsTable>
+      <RelationshipTypesTable></RelationshipTypesTable>
+      <AnimalsTable></AnimalsTable>
+      <SpeciesTable></SpeciesTable>
+      <RacesTable></RacesTable>
+    </v-col>
+    <v-col cols="2"></v-col>
+  </v-row>
 </template>
 <script>
-import PeopleTable from './PeopleTable.vue'
-import AnimalsTable from './AnimalsTable.vue' 
-import SpeciesTable from './SpeciesTable.vue'
-import RacesTable from './RacesTable.vue'
-import RelationshipsTable from './RelationshipsTable.vue'
-import RelationshipTypesTable from './RelationshipTypesTable.vue'
+import PeopleTable from './people/PeopleTable.vue'
+import AnimalsTable from './animal/AnimalsTable.vue'
+import SpeciesTable from './label/SpeciesTable.vue'
+import RacesTable from './label/RacesTable.vue'
+import RelationshipsTable from './relationship/RelationshipsTable.vue'
+import RelationshipTypesTable from './relationship/RelationshipTypesTable.vue'
 
 export default {
 	name:"DataPage",

@@ -48,7 +48,7 @@
 
 <script>
 
-import repository from '../repository.js'
+import repository from '../../repository.js'
 import CreateOrUpdatePerson from './CreateOrUpdatePerson.vue'
 
 export default {

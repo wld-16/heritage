@@ -21,15 +21,15 @@
       </v-radio-group>
       <v-select 
           v-model="race" 
-          :items="allRaces" 
-          item-text="label" 
+          :items="allRaces"
+          item-title="label"
           item-value="id"
           label="Race">
       </v-select>
       <v-select 
           v-model="species" 
           :items="allSpecies" 
-          item-text="label" 
+          item-title="label"
           item-value="id"
           label="Species">
       </v-select>
@@ -47,7 +47,7 @@
 
 <script>
 
-import repository from '../repository'
+import repository from '../../repository'
 
 export default {
   name: 'create-animal',
@@ -76,9 +76,9 @@ export default {
   },
   methods: {
     validate () {
-      console.log(this.$refs.form.validate())
       if(this.$refs.form.validate()) {
-        this.create()   
+        this.create()
+        this.$emit("create")
       }
     },
     create(){

@@ -36,7 +36,7 @@
 
 <script>
 
-import repository from '../repository.js'
+import repository from '../../repository.js'
 
 export default {
 	name: 'AnimalsTable',

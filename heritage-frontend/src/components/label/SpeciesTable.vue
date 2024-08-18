@@ -1,7 +1,7 @@
 <template>
 	<v-card>
 		<v-card-title>
-			<h1>Races</h1>
+			<h1>Species</h1>
 		</v-card-title>
 		<v-card-text>
 			<v-table>
@@ -13,12 +13,12 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr v-for="race in races" :key="race.id">
-					<td>{{ race.id }}</td>
-					<td>{{ race.label }}</td>
+				<tr v-for="specie in species" :key="specie.id">
+					<td>{{ specie.id }}</td>
+					<td>{{ specie.label }}</td>
 					<td>
 						<v-icon
-						@click="deleteRace(race.id).then(() => updateView())">
+						@click="deleteSpecies(item.id).then(() => updateView())">
 					>
 						mdi-delete
 					</v-icon>
@@ -32,10 +32,10 @@
 
 <script>
 
-import repository from '../repository.js'
+import repository from '../../repository.js'
 
 export default {
-	name: 'RacesTable',
+	name: 'SpeciesTable',
 	mixins: [ repository ],
 	data () {
 		return {
@@ -44,24 +44,24 @@ export default {
 				{ text: 'Label', value: 'label' },
 				{ text: 'Actions', value: 'actions'}
 			],
-		races: []
+			species: []
 		}
 	},
 	methods: {
 		updateView() {
-			this.getRaces().then(data => this.races = data).catch((err => console.log(err)))
+			this.getSpecies().then(data => this.species = data).catch((err => console.log(err)))
 		}
 	},
 	computed:{
-		computedRaces() {
-			return this.races.map(race => {
-				race.actions = 1
-				return race
+		computedSpecies() {
+			return this.species.map(specie => {
+				specie.actions = 1
+				return specie
 			})
 		}
 	},
 	mounted() {
-		this.getRaces().then(data => this.races = data).catch((err => console.log(err)))
+		this.getSpecies().then(data => this.species = data).catch((err => console.log(err)))
 	}
 }
 </script>

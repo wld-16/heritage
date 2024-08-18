@@ -37,7 +37,7 @@
 
 <script>
 
-import repository from '../repository'
+import repository from '../../repository'
 
 export default {
   name: 'create-person',
@@ -63,6 +63,7 @@ export default {
       let data = { person_1_id: this.person_1, person_2_id: this.person_2, relationship_id: this.relationship }
       this.createRelationship(data).then(() => {
         this.$emit('created');
+        this.$emit("create")
         this.forname = this.surname = this.gender = '';
       }).catch(err => console.log(err.message));
     }
