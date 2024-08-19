@@ -45,7 +45,7 @@ export default {
 		},
 		calculateYPositionsWithParents(entry, returnList, index, parent){
 				const name = entry.forname + " " + entry.surname
-				returnList.push({name: name, bday: entry.bday, y: index, parents: [parent]})
+				returnList.push({id: entry.id, name: name, bday: entry.bday, y: index, parents: [parent]})
 				index += 1
 				if(entry.child !== undefined){
 					return this.calculateYPositionsWithParents(entry.child, returnList, index, name)

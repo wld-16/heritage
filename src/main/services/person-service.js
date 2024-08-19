@@ -17,6 +17,14 @@ class PersonService {
 		const insertQuery = "INSERT INTO Person(id, forname, surname, birthdate, isAlive, gender) values (nextval('person_id_seq'), $1, $2, $3, $4, $5) returning *";
 		return client.query(insertQuery, values)
 	}
+	saveImageData(id, imageData){
+		const updateQuery = "UPDATE person SET imagedata = $2 WHERE id = $1 returning *";
+		return client.query(updateQuery, [id, imageData])
+	}
+	getImageData(id) {
+		const selectQuery = "SELECT imagedata from person where id = $1"
+		return client.query(selectQuery, [id])
+	}
 	updatePerson(id, values) {
 		const updateQuery = "UPDATE Person SET forname = $2, surname = $3, birthdate = $4, isAlive = $5, gender = $6 WHERE id = $1 returning *";
 		return client.query(updateQuery, [id, ...values])

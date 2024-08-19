@@ -1,6 +1,7 @@
 
 require('dotenv').config()
 const express = require('express')
+const expressFileupload = require("express-fileupload");
 const { Client } = require('pg');
 const app = express()
 const fs = require('fs')
@@ -14,6 +15,8 @@ const router = require('./router')
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(cors())
+app.use(expressFileupload({}))
+app.use(express.urlencoded({ extended: true }))
 app.use(router)
 
 app.listen(port, () => {

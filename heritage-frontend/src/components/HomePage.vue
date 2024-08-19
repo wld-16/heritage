@@ -7,7 +7,10 @@
             Create Person
           </v-expansion-panel-title>
           <v-expansion-panel-text>
-            <CreateOrUpdatePerson @create="personUpdate" />
+            <CreateOrUpdatePerson
+              @create="personUpdate"
+              @image-uploaded="imageUploadUpdate"
+            />
           </v-expansion-panel-text>
         </v-expansion-panel>
         <v-expansion-panel>
@@ -65,6 +68,9 @@ export default {
     personUpdate(person) {
       this.showSnackbar("Created new Person")
       this.$refs.people.updatePeople(person)
+    },
+    imageUploadUpdate() {
+      this.showSnackbar("Image Uploaded")
     },
     relationshipUpdate(relationship) {
       this.showSnackbar("Created new Relationship")
