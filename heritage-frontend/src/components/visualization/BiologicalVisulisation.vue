@@ -8,6 +8,12 @@ interface Size {
   x: number
   y: number
 }
+
+interface Node {
+  x: number,
+  y: number
+}
+
 const windowSize: Size = reactive({x: 1, y: 2})
 const dynamicWindowWidthQuotient = computed<number>(() => {
   return 2000 / windowSize.x
@@ -27,33 +33,11 @@ const xSpacing = computed<number>( () => {
 const textOffsetX: number = 20
 const textBDayOffset: number = 20
 const ySpacing: number = 200
+const textPositionY: number = 30
 
-onMounted(() => {
-  getBranches().then(data => {
-    let branchesWithPath = this.branchesWithPath(data.branches.sort((b1, b2) => b2.l - b1.l))
-    let branchesWithYPosition = this.branchesWithYPosition(branchesWithPath)
-    this.branches = branchesWithYPosition
-    return branchesWithYPosition
-  }).then(() => {
-    const levels = this.generateLevels(this.processedBranches)
-    this.xMax = Math.max(...Object.values(levels).map(level => level.length))
-    return this.calculateXPositions(levels)
-  }),
+const props = defineProps({
+  renderNodes: { type: Array<Node> }
 })
-
-function calculateXPositions(levels) {
-  Object.keys(levels).forEach(entry => {
-    levels[entry] = levels[entry].map((node, index) => {
-      node.x = index
-      return node
-    })
-  })
-  let levelsWithX = levels
-  this.renderNodes = Object.values(levelsWithX).flatMap(entry => entry).map(node => {
-    node.parents = [...new Set(node.parents.filter(parent => parent != null))]
-    return node
-  })
-}
 </script>
 
 <template>

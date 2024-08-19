@@ -22,27 +22,27 @@
         :font-size="20 / dynamicWindowWidthQuotient"
         :x="(node.x * xSpacing + textOffsetX) / dynamicWindowWidthQuotient"
         :y="node.y * ySpacing + textPositionY + imageHeight * node.y + imageHeight"
-        fill="red"
+        :fill="color"
       >{{ node.name }}
       </text>
       <text
         :font-size="20 / dynamicWindowWidthQuotient"
         :x="(node.x * xSpacing + textOffsetX) / dynamicWindowWidthQuotient"
         :y="node.y * ySpacing + textPositionY + textBDayOffset + imageHeight * node.y + imageHeight"
-        fill="red"
+        :fill="color"
       >{{ node.bday }}*
       </text>
-        <template v-if="node.parents.filter(parent => parent !== undefined).length > 0">
-          <line
-            v-for="parentNode in node.parents"
-            :key="parentNode.id"
-            :x1="(node.x * xSpacing + 100) / dynamicWindowWidthQuotient"
-            :x2="(renderNodes.filter(node => node.name === parentNode)[0].x * xSpacing + 100) / dynamicWindowWidthQuotient"
-            :y1="node.y * ySpacing + 10 + imageHeight * node.y"
-            :y2="renderNodes.filter(node => node.name === parentNode)[0].y * ySpacing + 30 + 25 + imageHeight * node.y"
-            style="stroke:rgb(255,0,0);stroke-width:2"
-          />
-        </template>
+      <template v-if="node.parents.filter(parent => parent !== undefined).length > 0">
+        <line
+          v-for="parentNode in node.parents"
+          :key="parentNode.id"
+          :x1="(node.x * xSpacing + 100) / dynamicWindowWidthQuotient"
+          :x2="(renderNodes.filter(node => node.name === parentNode)[0].x * xSpacing + 100) / dynamicWindowWidthQuotient"
+          :y1="node.y * ySpacing + imageHeight * node.y"
+          :y2="renderNodes.filter(node => node.name === parentNode)[0].y * ySpacing + 30 + 25 + imageHeight * node.y"
+          :style="`stroke:${color};stroke-width:${strokeWidth}`"
+        />
+      </template>
     </template>
   </svg>
   <svg
@@ -59,23 +59,23 @@
         :font-size="20 / dynamicWindowWidthQuotient"
         :x="(node.x * xSpacing + 20) / dynamicWindowWidthQuotient"
         :y="node.y * ySpacing + 30 + imageHeight * node.y + imageHeight"
-        fill="red"
+        :fill="color"
       >{{ node.name }}
       </text>
       <text
         :font-size="20 / dynamicWindowWidthQuotient"
         :x="(node.x * xSpacing + textOffsetX) / dynamicWindowWidthQuotient"
         :y="node.y * ySpacing + textPositionY + 20 + imageHeight * node.y + imageHeight"
-        fill="red"
+        :fill="color"
       >{{ node.bday }}*
       </text>
       <image
-          :x="(node.x * xSpacing + textOffsetX) / dynamicWindowWidthQuotient"
-          :y="node.y * ySpacing + imageHeight * node.y"
-          width="120"
-          height="120"
-          :xlink:href="`${BASE_URL}/api/person/get-image/${node.id}`"
-          :clip-path="`url(circleView-${node.id})`"
+        :x="(node.x * xSpacing + textOffsetX) / dynamicWindowWidthQuotient"
+        :y="node.y * ySpacing + imageHeight * node.y"
+        width="120"
+        height="120"
+        :xlink:href="`${BASE_URL}/api/person/get-image/${node.id}`"
+        :clip-path="`url(circleView-${node.id})`"
       />
       <template v-if="node.parents.filter(parent => parent !== undefined).length === 2">
         <line
@@ -85,7 +85,7 @@
           :x2="(findParentNodeByName(node.parents[0]).x * xSpacing + xOffset) / dynamicWindowWidthQuotient"
           :y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + textBDayOffset + imageHeight * node.y + 10"
           :y2="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + textBDayOffset + imageHeight * node.y + 10"
-          :style="`stroke:rgb(255,0,0);stroke-width:${strokeWidth}`"
+          :style="`stroke:${color};stroke-width:${strokeWidth}`"
         />
         <line
           v-if="renderChildrenRelationship"
@@ -93,9 +93,9 @@
           class="parents-child"
           :x1="((findParentNodeByName(node.parents[0]).x * xSpacing + xOffset) + ((findParentNodeByName(node.parents[1]).x * xSpacing) - (findParentNodeByName(node.parents[0]).x * xSpacing)) / 2) / dynamicWindowWidthQuotient"
           :x2="((findParentNodeByName(node.parents[0]).x * xSpacing + xOffset) + ((findParentNodeByName(node.parents[1]).x * xSpacing) - (findParentNodeByName(node.parents[0]).x * xSpacing)) / 2) / dynamicWindowWidthQuotient"
-          :y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + textBDayOffset + imageHeight * node.y  + 10"
+          :y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + textBDayOffset + imageHeight * node.y + 10"
           :y2="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * branchDelta + imageHeight * node.y"
-          :style="`stroke:rgb(255,0,0);stroke-width:${strokeWidth}`"
+          :style="`stroke:${color};stroke-width:${strokeWidth}`"
         />
         <line
           v-if="renderChildrenRelationship"
@@ -105,7 +105,7 @@
           :x2="(node.x * xSpacing + xOffset) / dynamicWindowWidthQuotient"
           :y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * branchDelta + imageHeight * node.y"
           :y2="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * branchDelta + imageHeight * node.y"
-          :style="`stroke:rgb(255,0,0);stroke-width:${strokeWidth}`"
+          :style="`stroke:${color};stroke-width:${strokeWidth}`"
         />
         <line
           v-if="renderChildrenRelationship"
@@ -115,7 +115,7 @@
           :x2="(node.x * xSpacing + xOffset) / dynamicWindowWidthQuotient"
           :y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * branchDelta + imageHeight * node.y"
           :y2="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name) : 1) + siblingsLineDown + imageHeight * node.y"
-          :style="`stroke:rgb(255,0,0);stroke-width:${strokeWidth}`"
+          :style="`stroke:${color};stroke-width:${strokeWidth}`"
         />
         <line
           :key="node.id"
@@ -124,7 +124,7 @@
           :x2="(findParentNodeByName(node.parents[0]).x * xSpacing + xOffset) / dynamicWindowWidthQuotient"
           :y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + textBDayOffset + imageHeight * node.y + 10"
           :y2="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset - partnersLineUp + textBDayOffset + imageHeight * node.y + 10"
-          :style="`stroke:rgb(255,0,0);stroke-width:${strokeWidth}`"
+          :style="`stroke:${color};stroke-width:${strokeWidth}`"
         />
         <line
           :key="node.id"
@@ -133,7 +133,7 @@
           :x2="(findParentNodeByName(node.parents[1]).x * xSpacing + xOffset) / dynamicWindowWidthQuotient"
           :y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + textBDayOffset + imageHeight * node.y + 10"
           :y2="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset - partnersLineUp + textBDayOffset + imageHeight * node.y + 10"
-          :style="`stroke:rgb(255,0,0);stroke-width:${strokeWidth}`"
+          :style="`stroke:${color};stroke-width:${strokeWidth}`"
         />
       </template>
       <template v-else-if="node.parents.filter(parent => parent !== undefined).length === 1">
@@ -145,7 +145,7 @@
           :x2="(findParentNodeByName(parentNode).x * xSpacing + xOffset + xSpacing * 0.5) / dynamicWindowWidthQuotient"
           :y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * branchDelta + imageHeight * node.y"
           :y2="findParentNodeByName(parentNode).y * ySpacing + yOffset + textBDayOffset + imageHeight * node.y + 10"
-          :style="`stroke:rgb(255,0,0);stroke-width:${strokeWidth}`"
+          :style="`stroke:${color};stroke-width:${strokeWidth}`"
         />
         <line
           v-for="parentNode in node.parents"
@@ -155,7 +155,7 @@
           :x2="(findParentNodeByName(parentNode).x * xSpacing + xOffset + xSpacing * 0.5) / dynamicWindowWidthQuotient"
           :y1="findParentNodeByName(parentNode).y * ySpacing + yOffset + textBDayOffset + imageHeight * node.y + 10"
           :y2="findParentNodeByName(parentNode).y * ySpacing + yOffset + textBDayOffset + imageHeight * node.y + 10"
-          :style="`stroke:rgb(255,0,0);stroke-width:${strokeWidth}`"
+          :style="`stroke:${color};stroke-width:${strokeWidth}`"
         />
         <line
           v-for="parentNode in node.parents"
@@ -165,7 +165,7 @@
           :x2="(findParentNodeByName(parentNode).x * xSpacing + xOffset + xSpacing * 0.5) / dynamicWindowWidthQuotient"
           :y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * branchDelta + imageHeight * node.y"
           :y2="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * branchDelta + imageHeight * node.y"
-          :style="`stroke:rgb(255,0,0);stroke-width:${strokeWidth}`"
+          :style="`stroke:${color};stroke-width:${strokeWidth}`"
         />
         <line
           v-for="parentNode in node.parents"
@@ -185,7 +185,7 @@
           :x2="(node.x * xSpacing + xOffset) / dynamicWindowWidthQuotient"
           :y1="findParentNodeByName(node.parents[0]).y * ySpacing + yOffset + parentChildConnectorDelta + topToBottomTree[node.y].flatMap(indexNode => indexNode.name).indexOf(node.name) * branchDelta + imageHeight * node.y"
           :y2="node.y * ySpacing + imageHeight * node.y"
-          :style="`stroke:rgb(255,0,0);stroke-width:${strokeWidth}`"
+          :style="`stroke:${color};stroke-width:${strokeWidth}`"
         />
       </template>
       <template v-if="node.siblings.filter(sibling => sibling !== undefined).length > 0 && renderSiblingRelationship">
@@ -205,7 +205,7 @@
           :x2="(nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[0])[0].x * xSpacing + xOffset) / dynamicWindowWidthQuotient"
           :y1="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name): 1) * siblingsDelta + imageHeight * node.y"
           :y2="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name): 1) * siblingsDelta + siblingsLineDown + imageHeight * node.y"
-          :style="`stroke:rgb(255,0,0);stroke-width:${strokeWidth}`"
+          :style="`stroke:${color};stroke-width:${strokeWidth}`"
         />
         <line
           :key="node.id"
@@ -214,7 +214,7 @@
           :x2="(nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[node.siblings.length - 1])[0].x * xSpacing + xOffset) / dynamicWindowWidthQuotient"
           :y1="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name) : 1) * siblingsDelta + imageHeight * node.y"
           :y2="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name) : 1) * siblingsDelta + siblingsLineDown + imageHeight * node.y"
-          :style="`stroke:rgb(255,0,0);stroke-width:${strokeWidth}`"
+          :style="`stroke:${color};stroke-width:${strokeWidth}`"
         />
       </template>
     </template>
@@ -244,6 +244,7 @@ export default {
       id: 1,
       renderNodes: [],
       strokeWidth: 4,
+      color: "#000",
       xSpacingBase: 300,
       ySpacing: 200,
       imageHeight: 110,
@@ -269,7 +270,7 @@ export default {
       xMax: 1,
       yMax: 1,
       selected: 1,
-      branchDelta: 4,
+      branchDelta: 0,
       windowSize: {
         x: 1,
         y: 1,
