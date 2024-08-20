@@ -3,7 +3,7 @@
   <svg
     v-if="selected === 0 && renderNodes.length > 0"
     id="svgelem"
-    :height="500 * yMax"
+    :height="400 * yMax"
     :width="300 * xMax / dynamicWindowWidthQuotient"
   >
     <template
@@ -48,7 +48,7 @@
   <svg
     v-if="selected === 1 && renderNodes.length > 0"
     id="svgelem"
-    :height="500 * yMax"
+    :height="400 * yMax"
     :width="300 * xMax / dynamicWindowWidthQuotient"
   >
     <template
@@ -175,7 +175,7 @@
           :x2="(findParentNodeByName(parentNode).x * xSpacing + xOffset) / dynamicWindowWidthQuotient"
           :y1="findParentNodeByName(parentNode).y * ySpacing + yOffset + textBDayOffset + imageHeight * node.y + 10"
           :y2="findParentNodeByName(parentNode).y * ySpacing + yOffset - partnersLineUp + textBDayOffset + imageHeight * node.y + 10"
-          :style="`stroke:rgb(255,0,0);stroke-width:${strokeWidth}`"
+          :style="`stroke:${color};stroke-width:${strokeWidth}`"
         />
         <line
           v-for="parentNode in node.parents"
@@ -196,7 +196,7 @@
           :x2="(nodesWithSiblings.filter(filterNode => filterNode.name === node.siblings[0])[0].x * xSpacing + xOffset) / dynamicWindowWidthQuotient"
           :y1="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name) : 1) * siblingsDelta + imageHeight * node.y"
           :y2="node.y * ySpacing - (topToBottomTree[node.y].map(indexNode => indexNode.siblings).length > 0 ? topToBottomTree[node.y].flatMap(indexNode => indexNode.siblings).indexOf(node.name) : 1) * siblingsDelta + imageHeight * node.y"
-          :style="`stroke:rgb(255,0,0);stroke-width:${strokeWidth}`"
+          :style="`stroke:${color};stroke-width:${strokeWidth}`"
         />
         <line
           :key="node.id"
@@ -243,7 +243,7 @@ export default {
       renderedNodes: [],
       id: 1,
       renderNodes: [],
-      strokeWidth: 4,
+      strokeWidth: 2,
       color: "#000",
       xSpacingBase: 300,
       ySpacing: 200,
@@ -270,7 +270,7 @@ export default {
       xMax: 1,
       yMax: 1,
       selected: 1,
-      branchDelta: 0,
+      branchDelta: 4,
       windowSize: {
         x: 1,
         y: 1,
@@ -342,15 +342,13 @@ export default {
       }
     },
     calculateXPositions(levels) {
-      console.log(levels)
       Object.keys(levels).forEach(entry => {
         levels[entry] = levels[entry].map((node, index) => {
           node.x = index
           return node
         })
       })
-      let levelsWithX = levels
-      this.renderNodes = Object.values(levelsWithX).flatMap(entry => entry).map(node => {
+      this.renderNodes = Object.values(levels).flatMap(entry => entry).map(node => {
         node.parents = [...new Set(node.parents.filter(parent => parent != null))]
         return node
       })

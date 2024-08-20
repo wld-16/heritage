@@ -1,6 +1,10 @@
 <template>
   <v-row>
+    <v-col cols="2"></v-col>
     <v-col cols="6">
+      <graph-visualization ref="visualisation" />
+    </v-col>
+    <v-col cols="4">
       <v-expansion-panels>
         <v-expansion-panel>
           <v-expansion-panel-title>
@@ -22,9 +26,6 @@
           </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>
-    </v-col>
-    <v-col cols="6">
-      <graph-visualization ref="visualisation" />
     </v-col>
   </v-row>
   <v-row>

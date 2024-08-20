@@ -3,7 +3,7 @@ const client = require('../db')
 class AnimalService {
 	// Animals
 	getAllAnimals() {
-		return client.query("select * from Animal",[])
+		return client.query("SELECT * FROM Animal",[])
 	}
 	createAnimal(values) {
 		const insertQuery = "INSERT INTO Animal(id, name, isAlive, sex, species_id, race_id) values (nextval('animal_id_seq'), $1, $2, $3, $4, $5) returning *";
@@ -15,7 +15,7 @@ class AnimalService {
 
 	// Species
 	getAllSpecies() {
-		return client.query("select * from Species",[])
+		return client.query("SELECT * FROM Species",[])
 	}
 	createSpecies(values) {
 		const insertQuery = "INSERT INTO Species(id, label) values (nextval('species_id_seq'), $1) returning *"
@@ -27,7 +27,7 @@ class AnimalService {
 
 	// Races
 	getAllRaces() {
-		return client.query("select * from Race", [])
+		return client.query("SELECT * FROM Race", [])
 	}
 	createRace(values) {
 		const insertQuery = "INSERT INTO Race(id, label) values (nextval('race_id_seq'), $1) returning *"

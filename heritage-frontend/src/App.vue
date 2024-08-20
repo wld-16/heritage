@@ -53,14 +53,6 @@
             Forms
           </v-list-item>
           <v-list-item
-            prepend-icon="mdi-source-branch"
-            value="branches"
-            name="Branches"
-            @click="moveTo('branches')"
-          >
-            Branches
-          </v-list-item>
-          <v-list-item
             prepend-icon="mdi-forum"
             value="about"
             name="About"
