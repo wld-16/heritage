@@ -7,6 +7,7 @@ const msal = require("@azure/msal-node")
 const url = require("url")
 const { Client } = require('pg');
 const app = express()
+const { parseJwt } = require('./services/jwt-service')
 const fs = require('fs')
 const cors = require('cors')
 const bodyParser = require('body-parser')
@@ -14,8 +15,11 @@ const bcrypt = require('bcrypt')
 const port = process.env.PORT || 3000
 
 const router = require("./router");
+const { UserService } = require('./services/user-service')
+const userService = new UserService()
 
 const SERVER_PORT = 3000
+const clientUrl = process.env.CLIENT_URL
 const cacheLocation = "./src/main/data/cache.json"
 const cachePlugin = require("./cachePlugin")(cacheLocation)
 
@@ -28,6 +32,10 @@ const sessionConfig = {
   cookie: {
     secure: false
   }
+}
+
+function log(content) {
+  console.log("[" + new Date().toLocaleString() + "] - " + content)
 }
 
 const getTokenAuthCode = function(scenarioConfig, clientApplication, port) {
@@ -88,7 +96,7 @@ const getTokenAuthCode = function(scenarioConfig, clientApplication, port) {
         return refreshTokenObject[Object.keys(refreshTokenObject)[0]].secret;
       }
       console.log(refreshToken())
-      res.redirect(`http://localhost:3001/?accessToken=${tokenResponse.accessToken}&refreshToken=${refreshToken()}`)
+      res.redirect(`${clientUrl}/?accessToken=${tokenResponse.accessToken}&refreshToken=${refreshToken()}`)
     })
   })
 
@@ -101,15 +109,21 @@ const getTokenAuthCode = function(scenarioConfig, clientApplication, port) {
       state: req.session.state
     }
     clientApplication.acquireTokenByCode(tokenRequest, authCodeResponse).then((tokenResponse) => {
-      console.log("Successfully acquired token using Authorization Code");
+      log("Successfully acquired token using Authorization Code");
       const refreshToken = () => {
         const tokenCache = clientApplication.getTokenCache().serialize();
         const refreshTokenObject = (JSON.parse(tokenCache)).RefreshToken
         const refreshToken = refreshTokenObject[Object.keys(refreshTokenObject)[0]].secret;
         return refreshToken;
       }
-      console.log(refreshToken())
-      res.redirect(`http://localhost:3001/#/?accessToken=${tokenResponse.accessToken}&refreshToken=${refreshToken()}`)
+      const oid = parseJwt(tokenResponse.accessToken).oid;
+
+      userService.existsUser(oid).then(exists => {
+        if(!exists) {
+          userService.createOrUpdateUser(oid)
+        }
+      })
+      res.redirect(`${clientUrl}?accessToken=${tokenResponse.accessToken}&refreshToken=${refreshToken()}&idToken=${tokenResponse.idToken}`)
     }).catch((error) => {
       console.log(error);
       res.status(500).send(error)
@@ -143,8 +157,7 @@ const clientConfig = {
 
 const publicClientApplication = new msal.ConfidentialClientApplication(clientConfig);
 
-return getTokenAuthCode(config, publicClientApplication, 3000)
-
+getTokenAuthCode(config, publicClientApplication, port)
 
 
 

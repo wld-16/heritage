@@ -5,9 +5,10 @@
     "node": "10.x",
     "npm": "6.x"
   },
+  "type": "commonjs",
   "description": "",
   "scripts": {
-    "start": "node src/main/server.js",
+    "start": "node --es-module-specifier-resolution=node src/built/server.js",
     "test": "mocha"
   },
   "repository": {
@@ -36,9 +37,13 @@
     "express-fileupload": "^1.5.1",
     "express-session": "^1.18.0",
     "image-thumbnail": "^1.0.17",
+    "jsonwebtoken": "^9.0.2",
     "mocha": "^10.7.3",
     "node-flywaydb": "^3.0.3",
     "pg": "^8.5.1",
     "ramda": "^0.27.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4"
   }
 }

@@ -7,10 +7,25 @@ const imageThumbnail = require('image-thumbnail');
 const PersonService = require('./services/person-service')
 const FamiltyTreeService = require('./services/familytree-service')
 const AnimalService = require('./services/animal-service')
+const { parse } = require("dotenv");
+const { parseJwt } = require("./services/jwt-service")
 
 const familyTreeService = new FamiltyTreeService()
 const personService = new PersonService()
 const animalService = new AnimalService()
+
+router.use((req, res, next) => {
+    //console.log(req.header("Authorization"))
+    if(req.header("Authorization")) {
+        if(new Date(parseJwt(req.header("Authorization").replace("Bearer ","")).exp * 1000) - new Date() < 0) {
+            log("JWT expired - Invalid Request")
+            res.status(401)
+        } else {
+            //console.log(parseJwt(req.header("Authorization").replace("Bearer ","")))
+        }
+    }
+    next()
+})
 
 router.get('/api/person/list', (req, res) => {
     log("Fetch People")
