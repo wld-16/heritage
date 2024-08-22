@@ -65,6 +65,9 @@ export default {
       snackbarVisible: false
     }
   },
+  mounted() {
+
+  },
   methods: {
     personUpdate(person) {
       this.showSnackbar("Created new Person")

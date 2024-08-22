@@ -1,10 +1,12 @@
 import axios from 'axios';
 const BASE_URL = process.env.VUE_APP_API_URL || "http://localhost:3000";
 
+axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem("accessToken")}`;
+
 export default {
 	data: () => {
 		return {
-			BASE_URL: BASE_URL
+			BASE_URL: BASE_URL,
 		}
 	},
 	methods: {

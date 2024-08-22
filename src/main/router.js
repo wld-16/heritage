@@ -258,10 +258,6 @@ router.get('/api/family-tree/maxHeight', (req, res) => {
     })
 })
 
-router.get('/', (req, res) => {
-    res.send('Hello World!');
-})
-
 function log(content) {
     console.log("[" + new Date().toLocaleString() + "] - " + content)
 }
