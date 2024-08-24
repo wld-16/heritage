@@ -1,29 +1,29 @@
 
-require('dotenv').config()
-const express = require('express')
-const expressFileupload = require("express-fileupload");
-const session = require("express-session")
-const msal = require("@azure/msal-node")
-const url = require("url")
-const { Client } = require('pg');
-const app = express()
-const { parseJwt } = require('./services/jwt-service')
-const fs = require('fs')
-const cors = require('cors')
-const bodyParser = require('body-parser')
-const bcrypt = require('bcrypt')
-const port = process.env.PORT || 3000
+import dotenv from 'dotenv'
+dotenv.config()
+import express from 'express'
+import { Request, Response } from 'express'
+import expressFileupload from "express-fileupload"
+import session from "express-session"
+import url from "url"
+import { parseJwt } from './services/jwt-service.js'
+import cors from 'cors'
+import bodyParser from 'body-parser'
+import { router } from "./router.js";
 
-const router = require("./router");
-const { UserService } = require('./services/user-service')
+import * as msal from "@azure/msal-node"
+const app = express()
+
+const port: number = parseInt(process.env.PORT) || 3000
+
+import { UserService } from './services/user-service.js'
 const userService = new UserService()
 
-const SERVER_PORT = 3000
-const clientUrl = process.env.CLIENT_URL
-const cacheLocation = "./src/main/data/cache.json"
-const cachePlugin = require("./cachePlugin")(cacheLocation)
+const clientUrl: string = process.env.CLIENT_URL
+import { cachePlugin } from "./cachePlugin.js";
 
-const config = require("./config/customConfig.json")
+import config from "./config/customConfig.json" assert { type: "json" }
+import {Configuration} from "@azure/msal-node";
 
 const sessionConfig = {
   secret: process.env.SESSION_SECRET,
@@ -34,14 +34,11 @@ const sessionConfig = {
   }
 }
 
-function log(content) {
+function log(content: string) {
   console.log("[" + new Date().toLocaleString() + "] - " + content)
 }
 
 const getTokenAuthCode = function(scenarioConfig, clientApplication, port) {
-  const serverPort = port || SERVER_PORT;
-
-  const router = require('./router')
 
   app.use(session(sessionConfig))
 
@@ -55,7 +52,7 @@ const getTokenAuthCode = function(scenarioConfig, clientApplication, port) {
 
   const requestConfig = scenarioConfig.request;
 
-  app.get("/", (req, res) => {
+  app.get("/", (req: Request, res: Response) => {
     if(req.query.code) {
       return res.redirect(url.format({ pathname: "/redirect", query: req.query }));
     }
@@ -83,7 +80,7 @@ const getTokenAuthCode = function(scenarioConfig, clientApplication, port) {
     }).catch((error) => console.log(JSON.stringify(error)))
   })
 
-  app.get("/refresh", (req, res) => {
+  app.get("/refresh", (req: Request, res: Response) => {
     const refreshTokenRequest = {
       refreshToken: req.query.refreshToken
     }
@@ -100,7 +97,7 @@ const getTokenAuthCode = function(scenarioConfig, clientApplication, port) {
     })
   })
 
-  app.get("/redirect", (req, res) => {
+  app.get("/redirect", (req: Request, res: Response) => {
     const tokenRequest = { ...requestConfig.tokenRequest, code: req.query.code, state: req.query.state, clientSecret: process.env.AZURE_CLIENT_SECRET };
 
     const authCodeResponse = {
@@ -143,7 +140,7 @@ const loggerOptions = {
   logLevel: msal.LogLevel.Verbose,
 }
 
-const clientConfig = {
+const clientConfig : Configuration = {
   auth: {
     clientId: config.authOptions.clientId,
     authority: config.authOptions.authority,
@@ -161,4 +158,6 @@ getTokenAuthCode(config, publicClientApplication, port)
 
 
 
-module.exports = getTokenAuthCode;
+export {
+  getTokenAuthCode
+};

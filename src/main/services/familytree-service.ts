@@ -1,23 +1,23 @@
-const client = require('../db')
+import { query } from '../db/index.js'
 
-class TreeStructure {
-	getChildrenOf(person){
+class FamilyTreeService {
+	getChildrenOf(person: Person){
 		let relationshipQuery = "select p.id, p.forname, p.surname, r.label, p.birthdate, ppr.person_to_id, ppr.person_from_id from person p inner join person_person_relationship ppr on p.id = ppr.person_from_id inner join relationship r on r.id = ppr.relationship_id where r.label = 'child' and ppr.person_to_id = $1"
-		let relationshipPromise = client.query(relationshipQuery, [person.id]).then(relationshipData => {
+		let relationshipPromise = query(relationshipQuery, [person.id]).then(relationshipData => {
 			return relationshipData.rows
 		})
 		return relationshipPromise
 	}
 
-	getParentsOf(person){
+	getParentsOf(person: Person){
 		let relationshipQuery = "select p.id, p.forname, p.surname, r.label, p.birthdate, ppr.person_to_id, ppr.person_from_id from person p inner join person_person_relationship ppr on p.id = ppr.person_from_id inner join relationship r on r.id = ppr.relationship_id where r.label = 'parent' and ppr.person_to_id = $1"
-		let relationshipPromise = client.query(relationshipQuery, [person.id]).then(relationshipData => {
+		let relationshipPromise = query(relationshipQuery, [person.id]).then(relationshipData => {
 			return relationshipData.rows
 		})
 		return relationshipPromise
 	}
 
-	getJsonParents(person){
+	getJsonParents(person: Person){
 		return new Promise(function(resolve, reject) {
     		resolve(person["parents"]);
   		});
@@ -56,14 +56,14 @@ class TreeStructure {
 
 	// Search the people, that are included in a person_relationship as parent with the restriction, that they are not included in a person_relationship as child
 	getPeopleWithNoParentsRecorded(){
-		return client.query("select * from person inner join (select ppr.person_from_id from person_person_relationship ppr inner join relationship r on ppr.relationship_id = r.id where r.label = 'parent' except select ppr.person_from_id from person_person_relationship ppr inner join relationship r on ppr.relationship_id = r.id where r.label = 'child') as ppr on ppr.person_from_id = person.id", [])
+		return query("select * from person inner join (select ppr.person_from_id from person_person_relationship ppr inner join relationship r on ppr.relationship_id = r.id where r.label = 'parent' except select ppr.person_from_id from person_person_relationship ppr inner join relationship r on ppr.relationship_id = r.id where r.label = 'child') as ppr on ppr.person_from_id = person.id", [])
 	}
 
-	getChildlessPeople(){
-		return client.query("select * from person inner join (select ppr.person_from_id from person_person_relationship ppr inner join relationship r on ppr.relationship_id = r.id where r.label = 'child' except select ppr.person_from_id from person_person_relationship ppr inner join relationship r on ppr.relationship_id = r.id where r.label = 'parent') as ppr on ppr.person_from_id = person.id", [])
+	getChildlessPeople() {
+		return query("select * from person inner join (select ppr.person_from_id from person_person_relationship ppr inner join relationship r on ppr.relationship_id = r.id where r.label = 'child' except select ppr.person_from_id from person_person_relationship ppr inner join relationship r on ppr.relationship_id = r.id where r.label = 'parent') as ppr on ppr.person_from_id = person.id", [])
 	}
 
-	countJsonMaxDepth(childlessPeople) {
+	countJsonMaxDepth(childlessPeople: any) {
 		let childlessPeopleArr = childlessPeople.childlessPeople
 		let depths = []
 		if(childlessPeopleArr.length !== 0){
@@ -77,12 +77,6 @@ class TreeStructure {
 			})]
 			return count
 		}
-	}
-
-	async asyncForEach(array, callback) {
-	  for (let index = 0; index < array.length; index++) {
-	    await callback(array[index], index, array);
-	  }
 	}
 
 	countMaxDepthReverse() {
@@ -106,4 +100,6 @@ class TreeStructure {
 	}
 }
 
-module.exports = TreeStructure;
+export {
+	FamilyTreeService
+};

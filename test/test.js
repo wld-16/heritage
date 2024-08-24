@@ -1,5 +1,5 @@
 var assert = require('assert');
-const TreeStructure = require('../src/main/services/familytree-service.js');
+const TreeStructure = require('../src/main/services/familytree-service.ts');
 const R = require('ramda');
 
 describe('Array', function() {
